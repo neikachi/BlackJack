@@ -14,7 +14,9 @@ public class ConnectionHandler implements Runnable{
 	public void run() {
 		try {
 			
-		} catch (InterruptedException e ) {
+//			working on the individual connection
+			
+		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} finally {
 			try {

@@ -24,6 +24,8 @@ public class MainServer {
 				Socket connection = server.accept();
 				String connectionId = getConnectionId(connection);
 				
+				clientServers.put(connectionId, connection);
+				
 				ConnectionHandler currConnection = new ConnectionHandler(connection);
 				
 				pool.submit(currConnection);
