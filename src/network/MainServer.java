@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 
 public class MainServer {
 	private final static int PORT = 7777;
+	private static int
 	private ConcurrentHashMap<String, Game> activeGames;
 	
 	public MainServer() {
@@ -47,6 +48,18 @@ public class MainServer {
 		
 		return Optional.empty();
 	}
+	
+	public void createGame() {
+		Game newGame = new Game();
+		
+		this.addGameToCollection(newGame.getGameId(), newGame);
+	}
+	
+	private void addGameToCollection(String gameId, Game newGame) {
+		this.activeGames.put(gameId, newGame);
+	}
+	
+	
 	
 	
 	
