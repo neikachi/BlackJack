@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainServer {
 	private final static int PORT = 7777;
-	private ConcurrentHashMap<String, Socket> activeGames;
+	private ConcurrentHashMap<String, Game> activeGames;
 	
 	public MainServer() {
-		this.activeGames = new ConcurrentHashMap<String, Socket>();
+		this.activeGames = new ConcurrentHashMap<String, Game>();
 	}
 	
 	public void start() throws IOException{
@@ -35,6 +36,16 @@ public class MainServer {
 		} catch (IOException e) {
 			e.getStackTrace();
 		}
+	}
+	
+	public Optional<Game> findAvailableGame() {
+		for (Game game: this.activeGames.values()) {
+			if (!(game.gameFull())) {
+				return Optional.of(game);
+			}
+		}
+		
+		return Optional.empty();
 	}
 	
 	
