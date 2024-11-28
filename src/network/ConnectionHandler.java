@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ConnectionHandler implements Runnable{
 	private Socket connection;
+	private ConcurrentLinkedQueue messages;
 	
 	public ConnectionHandler(Socket currConnection) {
 		this.connection = currConnection;
+		this.messages = new ConcurrentLinkedQueue();
 	}
 	
 	@Override

@@ -9,9 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import GameManager.Game;
+
 public class MainServer {
+	ExecutorService pool = Executors.newFixedThreadPool(100);
 	private final static int PORT = 7777;
-	private static int
 	private ConcurrentHashMap<String, Game> activeGames;
 	
 	public MainServer() {
@@ -19,16 +21,10 @@ public class MainServer {
 	}
 	
 	public void start() throws IOException{
-		ExecutorService pool = Executors.newFixedThreadPool(100);
-		
 		try (ServerSocket server = new ServerSocket(PORT)) {
 			
 			while (true) {
 				Socket connection = server.accept();
-//				String connectionId = getConnectionId(connection);
-				
-//				clientServers.put(connectionId, connection);
-				
 				ConnectionHandler currConnection = new ConnectionHandler(connection);
 				
 				pool.submit(currConnection);
@@ -59,13 +55,6 @@ public class MainServer {
 		this.activeGames.put(gameId, newGame);
 	}
 	
-	
-	
-	
-	
-//	private String getConnectionId(Socket connection) {
-//		return connection.getInetAddress().toString() + ":" + connection.getPort();
-//	}
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

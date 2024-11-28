@@ -1,4 +1,4 @@
-package network;
+package GameManager;
 
 public class Game {
 	private static int count = 0;
@@ -13,10 +13,11 @@ public class Game {
 	}
 	
 	public Boolean gameFull() {
-		
+		return false;
 	}
 	
 	public String getGameId() {
 		return this.id;
 	}
 }
+
