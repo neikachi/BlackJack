@@ -32,6 +32,8 @@ public class Client {
 			while (true) {
 				// create serverRes object that reads from server
 				// update GUI here
+				
+				// use sendMessageToServer method down here
 			}
 			
 			
