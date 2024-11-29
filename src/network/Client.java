@@ -21,16 +21,16 @@ public class Client {
 		
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException {
 		// TODO Auto-generated method stub
 		try (Socket socket = new Socket("localhost", 7777)) {
 			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 			
-//			Message guiMsg = new Message();
-			
 			while (true) {
 				// create serverRes object that reads from server
+				Object serverResponse = input.readObject();
+				Message serverMessage = (Message) serverResponse;
 				// update GUI here
 				
 				// use sendMessageToServer method down here
