@@ -6,19 +6,19 @@ public class Message implements Serializable{
 	private static int count = 0;
 	private final int id;
 	protected String type;
-	protected String status;
+	protected String role;
 	protected String text;
 	
 	public Message() {
 		this.type = "Undefined";
-		this.status = "Undefined";
+		this.role = "Undefined";
 		this.text = "Undefined";
 		this.id = count ++;
 	}
 	
-	public Message(String type, String status, String text) {
+	public Message(String type, String role, String text) {
 		this.type = type;
-		this.status = status;
+		this.role = role;
 		this.text = text;
 		this.id = count ++;
 	}
@@ -31,16 +31,12 @@ public class Message implements Serializable{
 		return this.type;
 	}
 	
-	public String getStatus() {
-		return this.status;
+	public String getRole() {
+		return this.role;
 	}
 	
 	public String getText() {
 		return this.text;
-	}
-	
-	public void setStatus(String status) {
-		this.status = status;
 	}
 	
 	public void setText(String text) {
