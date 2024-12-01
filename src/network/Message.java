@@ -9,23 +9,23 @@ public class Message implements Serializable{
 	protected String role;
 	protected String username;
 	protected String password;
-	protected String text;
+	protected String content;
 	
 	public Message() {
 		this.type = "Undefined";
 		this.role = "Undefined";
 		this.username = "Undefined";
 		this.password = "Undefined";
-		this.text = "Undefined";
+		this.content = "Undefined";
 		this.id = count ++;
 	}
 	
-	public Message(String type, String role, String username, String password, String text) {
+	public Message(String type, String role, String username, String password, String content) {
 		this.type = type;
 		this.role = role;
 		this.username = username;
 		this.password = password;
-		this.text = text;
+		this.content = content;
 		this.id = count ++;
 	}
 	
@@ -41,8 +41,8 @@ public class Message implements Serializable{
 		return this.role;
 	}
 	
-	public String getText() {
-		return this.text;
+	public String getContent() {
+		return this.content;
 	}
 	
 	public String getUsername() {
@@ -57,7 +57,7 @@ public class Message implements Serializable{
 		this.username = username;
 	}
 	
-	public void setPassword() {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 	
