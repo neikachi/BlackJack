@@ -6,30 +6,40 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import GameManager.Game;
+
 public class ConnectionHandler implements Runnable{
 	private Socket connection;
-	private ConcurrentLinkedQueue messages;
+	private MainServer server;
+	private ConcurrentLinkedQueue<Message> messages;
+	private boolean isLoggedIn;
+	private String gameInstanceId;
 	
-	public ConnectionHandler(Socket currConnection) {
+	public ConnectionHandler(Socket currConnection, MainServer server) {
 		this.connection = currConnection;
+		this.server = server;
 		this.messages = new ConcurrentLinkedQueue();
+		this.isLoggedIn = false;
 	}
 	
 	@Override
 	public void run() {
-		try {
-				ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+		try (
 				ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
-				
+				ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
+			) {
 				while (true) {
 					Object clientObj = input.readObject();
-					// create a message object to pass information
 					
-					// check to see if the incoming message is for a login.
-						// if it is not then send them back a message indicating they need to login.
+					if (clientObj instanceof Message) {
+						messages.add((Message) clientObj);
+					}
 					
-					// iterate over the list of game instances and try to find one for the player
-						// check the size of each game
+					Message nextMsg = messages.poll();
+					
+					if (nextMsg != null) {
+						this.processClientMessage(nextMsg, output);
+					}
 				}
 			
 		} catch (Exception e) {
@@ -42,4 +52,28 @@ public class ConnectionHandler implements Runnable{
 			}
 		}
 	}
+	
+	private void processClientMessage(Message nextMsg, ObjectOutputStream output) throws IOException {
+		if (!isLoggedIn) {
+			this.loginUser(nextMsg, output);
+		}
+	}
+	
+	private void loginUser(Message nextMsg, ObjectOutputStream output) throws IOException {
+		this.isLoggedIn = true;
+		
+		if (nextMsg.getRole().equals("dealer")) {
+			Game newGame = this.server.createGame();
+			this.gameInstanceId = newGame.getGameId();
+			output.writeObject(new Message("login", "server", "login successful...adding to game as dealer"));
+		} else {
+			Game existingGame = this.server.findAvailableGame();
+			
+			if (existingGame != null) {
+				this.gameInstanceId = existingGame.getGameId();
+				output.writeObject(new Message("login", "server", "login successful...adding to game as player"));
+			}
+		}
+	}
+
 }

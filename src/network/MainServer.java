@@ -25,7 +25,7 @@ public class MainServer {
 			
 			while (true) {
 				Socket connection = server.accept();
-				ConnectionHandler currConnection = new ConnectionHandler(connection);
+				ConnectionHandler currConnection = new ConnectionHandler(connection, this);
 				
 				pool.submit(currConnection);
 			}
@@ -35,20 +35,24 @@ public class MainServer {
 		}
 	}
 	
-	public Optional<Game> findAvailableGame() {
+	public Game findAvailableGame() {
 		for (Game game: this.activeGames.values()) {
 			if (!(game.gameFull())) {
-				return Optional.of(game);
+				return game;
 			}
 		}
 		
-		return Optional.empty();
+		return null;
 	}
 	
-	public void createGame() {
+	public Game createGame() {
 		Game newGame = new Game();
 		
 		this.addGameToCollection(newGame.getGameId(), newGame);
+		
+		newGame.setHasDealer(true);
+		
+		return newGame;
 	}
 	
 	private void addGameToCollection(String gameId, Game newGame) {
