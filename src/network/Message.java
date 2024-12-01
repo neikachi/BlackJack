@@ -20,6 +20,13 @@ public class Message implements Serializable{
 		this.id = count ++;
 	}
 	
+	public Message(String type, String role, String content) {
+		this.type = type;
+		this.role = role;
+		this.content = content;
+		this.id = count ++;
+	}
+	
 	public Message(String type, String role, String username, String password, String content) {
 		this.type = type;
 		this.role = role;
@@ -61,8 +68,8 @@ public class Message implements Serializable{
 		this.password = password;
 	}
 	
-	public void setText(String text) {
-		this.text = text;
+	public void setContent(String content) {
+		this.content = content;
 	}
 	
 }
