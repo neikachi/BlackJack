@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import GameManager.Game;
 
 public class ConnectionHandler implements Runnable{
+	private static int count = 0;
+	private final int id;
 	private Socket connection;
 	private MainServer server;
 	private ConcurrentLinkedQueue<Message> messages;
@@ -20,6 +22,7 @@ public class ConnectionHandler implements Runnable{
 		this.server = server;
 		this.messages = new ConcurrentLinkedQueue<>();
 		this.isLoggedIn = false;
+		this.id = count ++;
 	}
 	
 	@Override
@@ -53,16 +56,20 @@ public class ConnectionHandler implements Runnable{
 		}
 	}
 	
+	private Integer getThreadId() {
+		return this.id;
+	}
+	
 	private String getGameInstanceId () {
 		return this.gameInstanceId;
 	}
 	
-	private void setGameInstanceId(String gameInstanceId) {
-		this.gameInstanceId = gameInstanceId;
-	}
-	
 	private boolean getIsLoggedIn() {
 		return this.isLoggedIn;
+	}
+	
+	private void setGameInstanceId(String gameInstanceId) {
+		this.gameInstanceId = gameInstanceId;
 	}
 	
 	private void setIsLoggedIn(boolean isLoggedIn) {
@@ -79,10 +86,16 @@ public class ConnectionHandler implements Runnable{
 				this.server.registerUserInDatabase(msg.getRole(), msg.getUsername(), msg.getPassword());
 			}
 		}
-	}
-	
-	private Game getAssignedGame() {
-		return this.server.getActiveGameById(this.getGameInstanceId());
+		
+		Game currGame = this.getAssignedGame();
+		
+		if (currGame != null) {
+			Message res = currGame.processGameMessage(msg, this.getThreadId());
+			output.writeObject(res);
+		} else {
+			output.writeObject(new Message("playerAction", "server", "there was an error finding the game"));
+		}
+		
 	}
 	
 	private void loginUserToGame(Message nextMsg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
@@ -106,6 +119,10 @@ public class ConnectionHandler implements Runnable{
 				output.writeObject(new Message("login", "server", "No available games found, please try again later"));
 			}
 		}
+	}
+	
+	private Game getAssignedGame() {
+		return this.server.getActiveGameById(this.getGameInstanceId());
 	}
 
 }
