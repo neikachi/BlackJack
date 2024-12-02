@@ -92,7 +92,7 @@ public class MainServer {
 		}
 	}
 	
-	private String outputFormatedCredentials() {
+	private String outputFormattedCredentials() {
 		StringBuilder res = new StringBuilder();
 		
 		this.databaseCredentials.forEach((username, values) -> {
@@ -109,7 +109,7 @@ public class MainServer {
 		
 		try {
 			FileWriter myWriter = new FileWriter(this.sourceName);
-			myWriter.write(this.outputFormatedCredentials());
+			myWriter.write(this.outputFormattedCredentials());
 			myWriter.close();
 			
 		} catch (IOException e) {
@@ -128,7 +128,8 @@ public class MainServer {
 	}
 	
 	public void registerUserInDatabase (String role, String username, String password) {
-		
+		this.databaseCredentials.put(username, new String[] {role, password});
+		this.saveDatabaseCredentials();
 	}
 	
 	
