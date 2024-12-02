@@ -18,7 +18,7 @@ public class ConnectionHandler implements Runnable{
 	public ConnectionHandler(Socket currConnection, MainServer server) {
 		this.connection = currConnection;
 		this.server = server;
-		this.messages = new ConcurrentLinkedQueue();
+		this.messages = new ConcurrentLinkedQueue<>();
 		this.isLoggedIn = false;
 	}
 	
@@ -43,37 +43,48 @@ public class ConnectionHandler implements Runnable{
 				}
 			
 		} catch (Exception e) {
-			e.getStackTrace();
+			e.printStackTrace();
 		} finally {
 			try {
 				connection.close();
 			} catch (IOException e) {
-				e.getStackTrace();
+				e.printStackTrace();
 			}
 		}
+	}
+	
+	private String getGameInstanceId () {
+		return this.gameInstanceId;
+	}
+	
+	private void setGameInstanceId(String gameInstanceId) {
+		this.gameInstanceId = gameInstanceId;
 	}
 	
 	private void processClientMessage(Message nextMsg, ObjectOutputStream output) throws IOException {
 		if (!isLoggedIn) {
 			if (this.server.verifyCredentials(nextMsg)) {
-				this.loginUser(nextMsg, output);
+				this.loginUserToGame(nextMsg, output);
 			}
+			
 		}
 	}
 	
-	private void loginUser(Message nextMsg, ObjectOutputStream output) throws IOException {
+	private void loginUserToGame(Message nextMsg, ObjectOutputStream output) throws IOException {
 		this.isLoggedIn = true;
 		
 		if (nextMsg.getRole().equals("dealer")) {
 			Game newGame = this.server.createGame();
-			this.gameInstanceId = newGame.getGameId();
+			this.setGameInstanceId(newGame.getGameId());
 			output.writeObject(new Message("login", "server", "login successful...adding to game as dealer"));
 		} else {
 			Game existingGame = this.server.findAvailableGame();
 			
 			if (existingGame != null) {
-				this.gameInstanceId = existingGame.getGameId();
+				this.setGameInstanceId(existingGame.getGameId());
 				output.writeObject(new Message("login", "server", "login successful...adding to game as player"));
+			} else {
+				output.writeObject(new Message("login", "server", "No available games found, please try again later"));
 			}
 		}
 	}

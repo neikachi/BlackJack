@@ -61,7 +61,6 @@ public class MainServer {
 	}
 	
 	public boolean verifyCredentials(Message msg) {
-		String role = msg.getRole();
 		String username = msg.getUsername();
 		String password = msg.getPassword();
 		File inFile = new File(this.sourceName);
@@ -78,11 +77,10 @@ public class MainServer {
 			while (scanner.hasNextLine()) {
 				String data = scanner.nextLine().replaceAll("\\s", "");
 				String[] info = data.split(",");
-				String currRole = info[0];
 				String currUsername = info[1];
 				String currPassword = info[2];
 				
-				if (currRole.equals(role) && currUsername.equals(username) && currPassword.equals(password)) {
+				if (currUsername.equals(username) && currPassword.equals(password)) {
 					return true;
 				}
 			}
