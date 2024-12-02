@@ -1,6 +1,7 @@
 package network;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -91,8 +92,29 @@ public class MainServer {
 		}
 	}
 	
-	private void saveDatabaseCredentials() {
+	private String outputFormatedCredentials() {
+		StringBuilder res = new StringBuilder();
 		
+		this.databaseCredentials.forEach((username, values) -> {
+			String role = values[0];
+			String password = values[1];
+			res.append(role).append(",").append(username).append(",").append(password).append("\n");
+		});
+		
+		return res.toString();
+	}
+	
+	private void saveDatabaseCredentials() {
+		File file = new File(this.sourceName);
+		
+		try {
+			FileWriter myWriter = new FileWriter(this.sourceName);
+			myWriter.write(this.outputFormatedCredentials());
+			myWriter.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean credentialsInDatabase(String username, String password) {
