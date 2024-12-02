@@ -61,25 +61,39 @@ public class MainServer {
 	}
 	
 	public boolean verifyCredentials(Message msg) {
+		String role = msg.getRole();
 		String username = msg.getUsername();
 		String password = msg.getPassword();
 		File inFile = new File(this.sourceName);
+		
+		if (!inFile.exists()) {
+			System.out.println("File not found: " + this.sourceName);
+			return false;
+		}
 		
 		try {
 			
 			Scanner scanner = new Scanner(inFile);
 			
 			while (scanner.hasNextLine()) {
-				String data = scanner.nextLine();
+				String data = scanner.nextLine().replaceAll("\\s", "");
+				String[] info = data.split(",");
+				String currRole = info[0];
+				String currUsername = info[1];
+				String currPassword = info[2];
 				
+				if (currRole.equals(role) && currUsername.equals(username) && currPassword.equals(password)) {
+					return true;
+				}
 			}
 			
+			scanner.close();
+			
 		} catch (Exception e) {
-			e.getStackTrace();
+			e.printStackTrace();
 		}
 		
-		
-		return true;
+		return false;
 	}
 	
 	
