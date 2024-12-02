@@ -61,12 +61,13 @@ public class ConnectionHandler implements Runnable{
 		this.gameInstanceId = gameInstanceId;
 	}
 	
-	private void processClientMessage(Message nextMsg, ObjectOutputStream output) throws IOException {
+	private void processClientMessage(Message msg, ObjectOutputStream output) throws IOException {
 		if (!isLoggedIn) {
-			if (this.server.verifyCredentials(nextMsg)) {
-				this.loginUserToGame(nextMsg, output);
+			if (this.server.credentialsInDatabase(msg.getUsername(), msg.getPassword())) {
+				this.loginUserToGame(msg, output);
+			} else {
+				this.server.registerUserInDatabase(msg.getRole(), msg.getUsername(), msg.getPassword());
 			}
-			
 		}
 	}
 	

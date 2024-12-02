@@ -60,9 +60,7 @@ public class MainServer {
 		this.activeGames.put(gameId, newGame);
 	}
 	
-	public boolean verifyCredentials(Message msg) {
-		String username = msg.getUsername();
-		String password = msg.getPassword();
+	public boolean credentialsInDatabase(String username, String password) {
 		File inFile = new File(this.sourceName);
 		
 		if (!inFile.exists()) {
@@ -92,6 +90,10 @@ public class MainServer {
 		}
 		
 		return false;
+	}
+	
+	public void registerUserInDatabase (String role, String username, String password) {
+		
 	}
 	
 	
