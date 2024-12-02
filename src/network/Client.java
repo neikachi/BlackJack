@@ -7,7 +7,7 @@ import java.net.Socket;
 
 public class Client {
 	
-	public void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
+	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
 		try {
 			output.writeObject(guiMsg);
 			output.flush();
@@ -27,11 +27,18 @@ public class Client {
 			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 			
+			
+			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
+			output.flush();
+			
 			while (true) {
 				// create serverRes object that reads from server
 				Object serverResponse = input.readObject();
 				Message serverMessage = (Message) serverResponse;
+				System.out.println(serverMessage.getContent());
 				// update GUI here
+				
+//				sendMessageToServer(new Message("login", "dealer", "testingPlayer1", "player123", "content"), output);
 				
 				// use sendMessageToServer method down here
 			}
