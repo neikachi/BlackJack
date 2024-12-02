@@ -16,8 +16,10 @@ public class MainServer {
 	private final static int PORT = 7777;
 	private String sourceName = "src/resources/credentials.txt";
 	private ConcurrentHashMap<String, Game> activeGames;
+	private ConcurrentHashMap<String, String[]> databaseCredentials = new ConcurrentHashMap<>();
 	
 	public MainServer() {
+		this.loadDatabaseCredentials();
 		this.activeGames = new ConcurrentHashMap<String, Game>();
 	}
 	
@@ -60,12 +62,12 @@ public class MainServer {
 		this.activeGames.put(gameId, newGame);
 	}
 	
-	public boolean credentialsInDatabase(String username, String password) {
+	private void loadDatabaseCredentials() {
 		File inFile = new File(this.sourceName);
 		
 		if (!inFile.exists()) {
 			System.out.println("File not found: " + this.sourceName);
-			return false;
+			return;
 		}
 		
 		try {
@@ -75,18 +77,29 @@ public class MainServer {
 			while (scanner.hasNextLine()) {
 				String data = scanner.nextLine().replaceAll("\\s", "");
 				String[] info = data.split(",");
-				String currUsername = info[1];
-				String currPassword = info[2];
+				String role = info[0];
+				String username = info[1];
+				String password = info[2];
 				
-				if (currUsername.equals(username) && currPassword.equals(password)) {
-					return true;
-				}
+				this.databaseCredentials.put(username, new String[] {role, password});
 			}
 			
 			scanner.close();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void saveDatabaseCredentials() {
+		
+	}
+	
+	public boolean credentialsInDatabase(String username, String password) {
+		String[] userData = this.databaseCredentials.get(username);
+		
+		if (userData != null && userData[1].equals(password)) {
+			return true;
 		}
 		
 		return false;
