@@ -1,10 +1,10 @@
 package network;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,6 +14,7 @@ import GameManager.Game;
 public class MainServer {
 	ExecutorService pool = Executors.newFixedThreadPool(100);
 	private final static int PORT = 7777;
+	private String sourceName = "src/resources/credentials.txt";
 	private ConcurrentHashMap<String, Game> activeGames;
 	
 	public MainServer() {
@@ -59,6 +60,28 @@ public class MainServer {
 		this.activeGames.put(gameId, newGame);
 	}
 	
+	public boolean verifyCredentials(Message msg) {
+		String username = msg.getUsername();
+		String password = msg.getPassword();
+		File inFile = new File(this.sourceName);
+		
+		try {
+			
+			Scanner scanner = new Scanner(inFile);
+			
+			while (scanner.hasNextLine()) {
+				String data = scanner.nextLine();
+				
+			}
+			
+		} catch (Exception e) {
+			e.getStackTrace();
+		}
+		
+		
+		return true;
+	}
+	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -72,3 +95,30 @@ public class MainServer {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

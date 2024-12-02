@@ -55,7 +55,9 @@ public class ConnectionHandler implements Runnable{
 	
 	private void processClientMessage(Message nextMsg, ObjectOutputStream output) throws IOException {
 		if (!isLoggedIn) {
-			this.loginUser(nextMsg, output);
+			if (this.server.verifyCredentials(nextMsg)) {
+				this.loginUser(nextMsg, output);
+			}
 		}
 	}
 	

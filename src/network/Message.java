@@ -23,6 +23,8 @@ public class Message implements Serializable{
 	public Message(String type, String role, String content) {
 		this.type = type;
 		this.role = role;
+		this.username = "undefined";
+		this.password = "undefined";
 		this.content = content;
 		this.id = count ++;
 	}
