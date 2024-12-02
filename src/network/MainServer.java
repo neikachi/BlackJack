@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import GameManager.Game;
 
 public class MainServer {
-	ExecutorService pool = Executors.newFixedThreadPool(100);
+//	ExecutorService pool = Executors.newFixedThreadPool(100);
 	private final static int PORT = 7777;
 	private String sourceName = "src/resources/credentials.txt";
 	private ConcurrentHashMap<String, Game> activeGames;
@@ -39,24 +39,25 @@ public class MainServer {
 			
 			while (true) {
 				Socket connection = server.accept();
+				System.out.println("accepted new connetion...");
+				
 				ConnectionHandler currConnection = new ConnectionHandler(connection, this);
 				
-				pool.submit(currConnection);
+				new Thread(currConnection).start();
+				
+//				pool.submit(currConnection);
 			}
 			
 		} catch (IOException e) {
 			e.getStackTrace();
 		} finally {
-			pool.shutdown();
+//			pool.shutdown();
 		}
 	} 
-	
 	
 	public Game getActiveGameById(String gameId) {
 		return this.activeGames.get(gameId);
 	}
-	
-	
 	
 	public Game findAvailableGame() {
 		for (Game game: this.activeGames.values()) {

@@ -27,22 +27,28 @@ public class ConnectionHandler implements Runnable{
 	
 	@Override
 	public void run() {
-		try (
+		try (	ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
 				ObjectOutputStream output = new ObjectOutputStream(connection.getOutputStream());
-				ObjectInputStream input = new ObjectInputStream(connection.getInputStream());
 			) {
 				while (true) {
 					Object clientObj = input.readObject();
+					System.out.println("client" + clientObj.toString());
+					Message msg = (Message) clientObj;
 					
-					if (clientObj instanceof Message) {
-						messages.add((Message) clientObj);
-					}
+					System.out.println("in the client handler");
+//					if (clientObj instanceof Message) {
+//					messages.add((Message) clientObj);
+//					}
 					
-					Message nextMsg = messages.poll();
+//					Message nextMsg = messages.poll();
 					
-					if (nextMsg != null) {
-						this.processClientMessage(nextMsg, output, input);
-					}
+//					if (msg.getType().equals("login")) {
+//						output.writeObject("hello from the server");
+//					}
+					
+//					if (msg != null) {
+					this.processClientMessage(msg, output, input);
+//					}
 				}
 			
 		} catch (Exception e) {
@@ -79,34 +85,64 @@ public class ConnectionHandler implements Runnable{
 	///////// helper methods
 	
 	private void processClientMessage(Message msg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
-		if (this.getIsLoggedIn() == false) {
-			if (this.server.credentialsInDatabase(msg.getUsername(), msg.getPassword())) {
-				this.loginUserToGame(msg, output, input);
-			} else {
-				this.server.registerUserInDatabase(msg.getRole(), msg.getUsername(), msg.getPassword());
-			}
-		}
-		
-		Game currGame = this.getAssignedGame();
-		
-		if (currGame != null) {
-			Message res = currGame.processGameMessage(msg, this.getThreadId());
-			output.writeObject(res);
-		} else {
-			output.writeObject(new Message("playerAction", "server", "there was an error finding the game"));
-		}
-		
+	    System.out.println("Processing message from client: " + msg.getContent());
+	    if (!this.getIsLoggedIn()) {
+	        if (this.server.credentialsInDatabase(msg.getUsername(), msg.getPassword())) {
+	            this.loginUserToGame(msg, output, input);
+	        } else {
+	            this.server.registerUserInDatabase(msg.getRole(), msg.getUsername(), msg.getPassword());
+	            output.writeObject(new Message("login", "server", "Registration successful."));
+	            output.flush();
+	        }
+	        this.setIsLoggedIn(true);
+	        return;
+	    }
+
+	    Game currGame = this.getAssignedGame();
+	    if (currGame != null) {
+	        Message res = currGame.processGameMessage(msg, this.getThreadId());
+	        System.out.println("Game response: " + res.getContent());
+	        output.writeObject(res);
+	        output.flush();
+	    } else {
+	        System.out.println("No game assigned to client.");
+	        output.writeObject(new Message("error", "server", "No game found."));
+	        output.flush();
+	    }
 	}
+
+	
+//	private void processClientMessage(Message msg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
+//		if (this.getIsLoggedIn() == false) {
+//			if (this.server.credentialsInDatabase(msg.getUsername(), msg.getPassword())) {
+//				this.loginUserToGame(msg, output, input);
+//			} else {
+//				this.server.registerUserInDatabase(msg.getRole(), msg.getUsername(), msg.getPassword());
+//			}
+//			this.setIsLoggedIn(true);
+//		}
+//		
+//		Game currGame = this.getAssignedGame();
+//		
+//		if (currGame != null) {
+//			Message res = currGame.processGameMessage(msg, this.getThreadId());
+//			output.writeObject(res);
+//			output.flush();
+//		} else {
+//			output.writeObject(new Message("playerAction", "server", "there was an error finding the game"));
+//			output.flush();
+//		}
+//		
+//	}
 	
 	private void loginUserToGame(Message nextMsg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
-		this.setIsLoggedIn(true);
-		
 		if (nextMsg.getRole().equals("dealer")) {
 			Game newGame = this.server.createGame();
 			this.setGameInstanceId(newGame.getGameId());
 //			Dealer dealer = Dealer(nextMsg.getUsername(), output, input);
 //			newGame.addDealer(dealer);
 			output.writeObject(new Message("login", "server", "login successful...adding to game as dealer"));
+			output.flush();
 		} else {
 			Game existingGame = this.server.findAvailableGame();
 			
@@ -115,8 +151,10 @@ public class ConnectionHandler implements Runnable{
 //				Player player = Player(nextMsg.getUsername(), output, input);
 //				existingGame.addPlayer(player);
 				output.writeObject(new Message("login", "server", "login successful...adding to game as player"));
+				output.flush();
 			} else {
 				output.writeObject(new Message("login", "server", "No available games found, please try again later"));
+				output.flush();
 			}
 		}
 	}
