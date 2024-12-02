@@ -57,6 +57,8 @@ public class ConnectionHandler implements Runnable{
 		return this.gameInstanceId;
 	}
 	
+	/// just testing
+	
 	private void setGameInstanceId(String gameInstanceId) {
 		this.gameInstanceId = gameInstanceId;
 	}
