@@ -19,6 +19,16 @@ public class MainServer {
 	private ConcurrentHashMap<String, Game> activeGames;
 	private ConcurrentHashMap<String, String[]> databaseCredentials = new ConcurrentHashMap<>();
 	
+	public static void main(String[] args) {
+		try {
+			MainServer server = new MainServer();
+			server.start();
+			
+		} catch (IOException e) {
+			e.getStackTrace();
+		}
+	}
+	
 	public MainServer() {
 		this.loadDatabaseCredentials();
 		this.activeGames = new ConcurrentHashMap<String, Game>();
@@ -36,8 +46,17 @@ public class MainServer {
 			
 		} catch (IOException e) {
 			e.getStackTrace();
+		} finally {
+			pool.shutdown();
 		}
+	} 
+	
+	
+	public Game getActiveGameById(String gameId) {
+		return this.activeGames.get(gameId);
 	}
+	
+	
 	
 	public Game findAvailableGame() {
 		for (Game game: this.activeGames.values()) {
@@ -78,6 +97,12 @@ public class MainServer {
 			while (scanner.hasNextLine()) {
 				String data = scanner.nextLine().replaceAll("\\s", "");
 				String[] info = data.split(",");
+				
+				if (info.length != 3) {
+	                System.out.println("Skipping invalid line: " + data);
+	                continue;
+	            }
+				
 				String role = info[0];
 				String username = info[1];
 				String password = info[2];
@@ -104,7 +129,7 @@ public class MainServer {
 		return res.toString();
 	}
 	
-	private void saveDatabaseCredentials() {
+	private synchronized void saveDatabaseCredentials() {
 		File file = new File(this.sourceName);
 		
 		try {
@@ -130,18 +155,6 @@ public class MainServer {
 	public void registerUserInDatabase (String role, String username, String password) {
 		this.databaseCredentials.put(username, new String[] {role, password});
 		this.saveDatabaseCredentials();
-	}
-	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		try {
-			MainServer server = new MainServer();
-			server.start();
-			
-		} catch (IOException e) {
-			e.getStackTrace();
-		}
 	}
 
 }

@@ -38,7 +38,7 @@ public class ConnectionHandler implements Runnable{
 					Message nextMsg = messages.poll();
 					
 					if (nextMsg != null) {
-						this.processClientMessage(nextMsg, output);
+						this.processClientMessage(nextMsg, output, input);
 					}
 				}
 			
@@ -57,34 +57,50 @@ public class ConnectionHandler implements Runnable{
 		return this.gameInstanceId;
 	}
 	
-	/// just testing
-	
 	private void setGameInstanceId(String gameInstanceId) {
 		this.gameInstanceId = gameInstanceId;
 	}
 	
-	private void processClientMessage(Message msg, ObjectOutputStream output) throws IOException {
-		if (!isLoggedIn) {
+	private boolean getIsLoggedIn() {
+		return this.isLoggedIn;
+	}
+	
+	private void setIsLoggedIn(boolean isLoggedIn) {
+		this.isLoggedIn = isLoggedIn;
+	}
+	
+	///////// helper methods
+	
+	private void processClientMessage(Message msg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
+		if (this.getIsLoggedIn() == false) {
 			if (this.server.credentialsInDatabase(msg.getUsername(), msg.getPassword())) {
-				this.loginUserToGame(msg, output);
+				this.loginUserToGame(msg, output, input);
 			} else {
 				this.server.registerUserInDatabase(msg.getRole(), msg.getUsername(), msg.getPassword());
 			}
 		}
 	}
 	
-	private void loginUserToGame(Message nextMsg, ObjectOutputStream output) throws IOException {
-		this.isLoggedIn = true;
+	private Game getAssignedGame() {
+		return this.server.getActiveGameById(this.getGameInstanceId());
+	}
+	
+	private void loginUserToGame(Message nextMsg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
+		this.setIsLoggedIn(true);
 		
 		if (nextMsg.getRole().equals("dealer")) {
 			Game newGame = this.server.createGame();
 			this.setGameInstanceId(newGame.getGameId());
+//			Dealer dealer = Dealer(nextMsg.getUsername(), output, input);
+//			newGame.addDealer(dealer);
 			output.writeObject(new Message("login", "server", "login successful...adding to game as dealer"));
 		} else {
 			Game existingGame = this.server.findAvailableGame();
 			
 			if (existingGame != null) {
 				this.setGameInstanceId(existingGame.getGameId());
+//				Player player = Player(nextMsg.getUsername(), output, input);
+//				existingGame.addPlayer(player);
 				output.writeObject(new Message("login", "server", "login successful...adding to game as player"));
 			} else {
 				output.writeObject(new Message("login", "server", "No available games found, please try again later"));

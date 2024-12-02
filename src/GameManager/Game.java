@@ -1,21 +1,27 @@
 package GameManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import network.ConnectionHandler;
+
 public class Game {
 	private static int count = 0;
 	private final String id;
 	private boolean hasDealer;
+	private List<Player> players;
 	
 	public Game() {
 		this.id = Integer.toString(count ++);
 		this.hasDealer = false;
-	}
-
-	public void addPlayer() {
-		
+		this.players = new ArrayList<>();
 	}
 	
 	public Boolean gameFull() {
-		return false;
+		if (hasDealer && this.players.size() >= 4) {
+			return false;
+		}
+		return true;
 	}
 	
 	public String getGameId() {
@@ -29,5 +35,15 @@ public class Game {
 	public void setHasDealer(boolean hasDealer) {
 		this.hasDealer = hasDealer;
 	}
+	
+	public void addPlayer(Player player) {
+		
+	}
+	
+	public void addDealer(Dealer dealer) {
+		
+	}
+	
+	
 }
 
