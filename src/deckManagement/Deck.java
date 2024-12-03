@@ -1,29 +1,27 @@
 package deckManagement;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Deck {
-    final List<Card> numCards;
+    private List<Card> cards;
 
     public Deck() {
-        numCards = new ArrayList<>(); //hashmap
+        cards = new ArrayList<>();
         for (Card.Suit suit : Card.Suit.values()) {
-            for (Rank rank : Rank.values()) {
-                numCards.add(new Card(suit, rank));
+            for (Card.Rank rank : Card.Rank.values()) {
+                cards.add(new Card(suit, rank));
             }
         }
-        shuffle();
+        shuffle();  // Shuffle when created
     }
 
     public List<Card> getCards() {
-        return numCards;
+        return new ArrayList<>(cards);  // Return a copy to prevent external modification
     }
-    
-    public void shuffle() {
-        Collections.shuffle(numCards); //could remove this since deck collection has a shuffle method already. So that we can optimize 
-    } 
 
-    //create a hit and stand method
-    
+    public void shuffle() {
+        Collections.shuffle(cards);
+    }
 }
