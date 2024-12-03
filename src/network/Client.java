@@ -1,5 +1,6 @@
 
 
+
 package network;
 
 
@@ -12,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -20,23 +22,18 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import gui.PlayerDealerGUI;
+
 public class Client {
 	
-	private Socket socket;
-	private ObjectInputStream inputStream;	
-	private ObjectOutputStream outputStream;
-
-    // Constructor for initializing connection
-    public Client(String host, int port) throws IOException {
-        Socket socket = new Socket(host, port);
-        outputStream = new ObjectOutputStream(socket.getOutputStream());
-        inputStream = new ObjectInputStream(socket.getInputStream());
-    }
+	public Client() {
+		
+	}
 	
-	public void sendMessageToServer(Message guiMsg) {
+	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
 		try {
-			outputStream.writeObject(guiMsg);
-			outputStream.flush();
+			output.writeObject(guiMsg);
+			output.flush();
 			
 		} catch (IOException e) {
 			e.getStackTrace();
@@ -44,28 +41,8 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException {
+
 		String host = IPAddressGUI();
-	
-    // Receives a message from the server
-    public Message receiveMessageFromServer() throws IOException, ClassNotFoundException {
-        Object response = inputStream.readObject();
-        if (response instanceof Message) {
-            return (Message) response;
-        }
-        return null;
-    }
-	
-	public void disconnect() {
-		
-	}
-
-	public static void main(String[] args) throws ClassNotFoundException {
-
-		String ipAddress;
-		Scanner sc = new Scanner(System.in);
-		
-		System.out.println("Enter ip address to connect to: ");
-		String host = sc.next();
 		
 		try (Socket socket = new Socket(host, 7777);
 				ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
@@ -73,7 +50,6 @@ public class Client {
 			) {
 			
 			registerGUI(output);
-			client.sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"));
 //			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
 //			output.flush();
 			
@@ -84,8 +60,15 @@ public class Client {
                     System.out.println(serverMessage.getContent());
                     // updateGUI(serverMessage); // Replace with your GUI update logic
                     if (serverMessage.getContent().equals("Registration successful.")) {
-  
                     	loginGUI(output);
+                    }
+                    
+                    if (serverMessage.getRole().equals("player") && serverMessage.getContent().equals("login successful")) {
+                    	// show the player gui
+                    	new PlayerDealerGUI(new Client(), false);
+                    } else if (serverMessage.getRole().equals("dealer") && serverMessage.getContent().equals("login successful") {
+                    	// 
+             
                     }
       
                 } catch (IOException | ClassNotFoundException e) {
@@ -160,16 +143,15 @@ public class Client {
 	
 	private static void registerGUI(ObjectOutputStream output) {
 		JFrame frame = new JFrame("Register");
+		JComboBox<String> roleSelector;
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(400,300);
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(5,1));
 		
-		JLabel roleLabel = new JLabel("role: ");
-		JTextField roleField = new JTextField();
-		panel.add(roleLabel);
-		panel.add(roleField);
+		roleSelector = new JComboBox<>(new String[]{"Player", "Dealer"});
+        roleSelector.setBounds(100, 80, 165, 25);
 		
 		JLabel userLabel = new JLabel("Username: ");
 		JTextField usernameField = new JTextField();
@@ -178,14 +160,16 @@ public class Client {
 		
 		JLabel passLabel = new JLabel("Password:");
 	    JPasswordField passwordField = new JPasswordField();
-	    panel.add(passLabel);
-	    panel.add(passwordField);
+	    
 	    
 	    JPanel buttonPanel = new JPanel();
 	    JButton loginButton = new JButton("login");
 		JButton registerButton = new JButton("Register");
 		buttonPanel.add(loginButton);
 		buttonPanel.add(registerButton);
+		panel.add(passLabel);
+	    panel.add(passwordField);
+		panel.add(roleSelector);
 		panel.add(buttonPanel);
 		
 		frame.add(panel);
@@ -197,7 +181,7 @@ public class Client {
 		});
 	    
 		  registerButton.addActionListener(e -> {
-	            String role = roleField.getText().trim();
+	            String role = roleSelector.getSelectedItem().toString();
 	            String username = usernameField.getText().trim();
 	            String password = new String(passwordField.getPassword()).trim();
 	            if (!username.isEmpty() && !password.isEmpty()) {
@@ -210,16 +194,17 @@ public class Client {
 	
 	private static void loginGUI(ObjectOutputStream output) {
 		JFrame frame = new JFrame("Login");
+		JComboBox<String> roleSelector;
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(600,400);
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(5,1));
 		
-		JLabel roleLabel = new JLabel("role: ");
-		JTextField roleField = new JTextField();
-		panel.add(roleLabel);
-		panel.add(roleField);
+		
+		
+		roleSelector = new JComboBox<>(new String[]{"Player", "Dealer"});
+        roleSelector.setBounds(100, 80, 165, 25);
 		
 		JLabel userLabel = new JLabel("Username: ");
 		JTextField usernameField = new JTextField();
@@ -237,6 +222,7 @@ public class Client {
 		
 		buttonPanel.add(loginButton);
 		buttonPanel.add(registerButton);
+		panel.add(roleSelector);
 		panel.add(buttonPanel);
 		
 	
@@ -246,7 +232,7 @@ public class Client {
 		frame.setVisible(true);
 		
 		loginButton.addActionListener(e -> {
-			String role = roleField.getText().trim();
+			String role = roleSelector.getSelectedItem().toString();
 			String username = usernameField.getText().trim();
 			String password = new String(passwordField.getPassword()).trim();
 			
@@ -264,46 +250,6 @@ public class Client {
 }	
 
 //134.154.32.163
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
