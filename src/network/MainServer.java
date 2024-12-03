@@ -3,17 +3,15 @@ package network;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import GameManager.Game;
 
 public class MainServer {
-//	ExecutorService pool = Executors.newFixedThreadPool(100);
 	private final static int PORT = 7777;
 	private String sourceName = "src/resources/credentials.txt";
 	private ConcurrentHashMap<String, Game> activeGames;
@@ -35,8 +33,11 @@ public class MainServer {
 	}
 	
 	public void start() throws IOException{
-		try (ServerSocket server = new ServerSocket(PORT)) {
-			
+		ServerSocket server = new ServerSocket(PORT);
+		String hostAddress = "134.154.32.163";
+		System.out.println("server started on ip: " + hostAddress);
+		
+		try {
 			while (true) {
 				Socket connection = server.accept();
 				System.out.println("accepted new connetion...");
@@ -44,14 +45,10 @@ public class MainServer {
 				ConnectionHandler currConnection = new ConnectionHandler(connection, this);
 				
 				new Thread(currConnection).start();
-				
-//				pool.submit(currConnection);
 			}
 			
 		} catch (IOException e) {
 			e.getStackTrace();
-		} finally {
-//			pool.shutdown();
 		}
 	} 
 	

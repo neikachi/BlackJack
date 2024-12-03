@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
 	
@@ -23,13 +24,19 @@ public class Client {
 
 	public static void main(String[] args) throws ClassNotFoundException {
 		// TODO Auto-generated method stub
-		try (Socket socket = new Socket("localhost", 7777)) {
+		String ipAddress;
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter ip address to connect to: ");
+		String host = sc.next();
+		
+		try (Socket socket = new Socket(host, 7777)) {
 			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 			
-			
-			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
-			output.flush();
+			sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"), output);
+//			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
+//			output.flush();
 			
 			while (true) {
 				// create serverRes object that reads from server
