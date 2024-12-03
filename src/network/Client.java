@@ -26,10 +26,6 @@ import gui.PlayerDealerGUI;
 
 public class Client {
 	
-	public Client() {
-		
-	}
-	
 	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
 		try {
 			output.writeObject(guiMsg);
