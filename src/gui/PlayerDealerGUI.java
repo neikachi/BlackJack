@@ -20,7 +20,7 @@ public class PlayerDealerGUI {
     private Client client; // Use the Client class for networking
     private boolean isDealer;
 
-    public PlayerDealerGUI(Client client, boolean isDealer) {
+    public PlayerDealerGUI( Client client, boolean isDealer) {
         this.client = client;
         this.isDealer = isDealer;
 

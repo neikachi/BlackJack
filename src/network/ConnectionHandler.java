@@ -7,6 +7,9 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import GameManager.Game;
+import user.Dealer;
+import user.Player;
+import user.User.AccountType;
 
 public class ConnectionHandler implements Runnable{
 	private static int count = 0;
@@ -117,8 +120,8 @@ public class ConnectionHandler implements Runnable{
 		if (nextMsg.getRole().equals("dealer")) {
 			Game newGame = this.server.createGame();
 			this.setGameInstanceId(newGame.getGameId());
-//			Dealer dealer = Dealer(nextMsg.getUsername(), nextMsg.getPassword(), id);
-//			newGame.addUser(dealer);
+			Dealer dealer = new Dealer(nextMsg.getUsername(), nextMsg.getPassword());
+			newGame.addDealer(dealer);
 			output.writeObject(new Message("login", "server", "login successful."));
 			output.flush();
 		} else {
@@ -126,12 +129,12 @@ public class ConnectionHandler implements Runnable{
 			
 			if (existingGame != null) {
 				this.setGameInstanceId(existingGame.getGameId());
-//				Player player = Player(nextMsg.getUsername(), nextMsg.getPassword(), id);
-//				existingGame.addUser(player);
+//				Player player = new Player(nextMsg.getUsername(), nextMsg.getPassword(), 0);
+//				existingGame.addPlayer(player);
 				output.writeObject(new Message("login", "server", "login successful."));
 				output.flush();
 			} else {
-				output.writeObject(new Message("login", "server", "No available games found, please try again later"));
+				output.writeObject(new Message("login", "server", "No available games found, please try again later."));
 				output.flush();
 			}
 		}

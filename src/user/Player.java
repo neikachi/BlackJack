@@ -8,17 +8,15 @@ import deckManagement.Card;
 public class Player extends User {
     // Fields
     private ArrayList<ArrayList<Card>> splitHands;  // Additional hand for split
-    private double balance;
     private double currentBet;
     private Status status;
 
 
     // Constructor
-    public Player(String username, String password, int accBalance, AccountType accountType, double balance) {
+    public Player(String username, String password, int accBalance, AccountType accountType) {
         super(username, password, accBalance, accountType);
         this.hand = new ArrayList<>();
         this.splitHands = null;  // Initialized during a split
-        this.balance = balance;
         this.currentBet = 0.0;
         this.status = status.ACTIVE;
     }
