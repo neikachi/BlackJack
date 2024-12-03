@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -30,33 +30,30 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException {
-		// TODO Auto-generated method stub
-//		String ipAddress;
-//		Scanner sc = new Scanner(System.in);
-//		
-//		System.out.println("Enter ip address to connect to: ");
-//		String host = sc.next();
 		String host = IPAddressGUI();
 		
-		try (Socket socket = new Socket(host, 7777)) {
-			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
-			ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+		try (Socket socket = new Socket(host, 7777);
+				ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+			) {
 			
-//			sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"), output);
-//			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
-//			output.flush();
+			loginGUI(output);
 			
 			while (true) {
-				// create serverRes object that reads from server
-				Object serverResponse = input.readObject();
-				Message serverMessage = (Message) serverResponse;
-				System.out.println(serverMessage.getContent());
-				// update GUI here
-				
-//				sendMessageToServer(new Message("login", "dealer", "testingPlayer1", "player123", "content"), output);
-				
-				// use sendMessageToServer method down here
-			}
+                try {
+                    // Read server response and update GUI (placeholder)
+                    Object serverResponse = input.readObject();
+                    Message serverMessage = (Message) serverResponse;
+                    System.out.println(serverMessage.getContent());
+                    // updateGUI(serverMessage); // Replace with your GUI update logic
+                } catch (IOException | ClassNotFoundException e) {
+                    // Handle network or data format exceptions
+                    e.printStackTrace();
+                    // Inform user about connection issues (optional)
+                    // Consider retrying or exiting
+                    break;
+                }
+            }
 			
 			
 		} catch (IOException e) {
@@ -118,7 +115,54 @@ public class Client {
 	    
 	    return res[0];
 	}
+	
+	private static void loginGUI(ObjectOutputStream output) {
+		JFrame frame = new JFrame("Login");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(400,300);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(5,1));
+		
+		JLabel roleLabel = new JLabel("role: ");
+		JTextField roleField = new JTextField();
+		panel.add(roleLabel);
+		panel.add(roleField);
+		
+		JLabel userLabel = new JLabel("Username: ");
+		JTextField usernameField = new JTextField();
+		panel.add(userLabel);
+		panel.add(usernameField);
+		
+		JLabel passLabel = new JLabel("Password:");
+	    JPasswordField passwordField = new JPasswordField();
+	    panel.add(passLabel);
+	    panel.add(passwordField);
+		
+		JPanel buttonPanel = new JPanel();
+		JButton loginButton = new JButton("login");
+		JButton registerButton = new JButton("Register");
+		buttonPanel.add(loginButton);
+		buttonPanel.add(registerButton);
+		panel.add(buttonPanel);
+		
+		frame.add(panel);
+		frame.setVisible(true);
+		
+		loginButton.addActionListener(e -> {
+			String role = roleField.getText().trim();
+			String username = usernameField.getText().trim();
+			String password = new String(passwordField.getPassword()).trim();
+			
+			if (!username.isEmpty() && !password.isEmpty()) {
+				sendMessageToServer(new Message("login", role, username, password, "attempting to login"), output);
+			}
+		});
+	}
 }	
+
+//134.154.32.163
+
 
 
 
