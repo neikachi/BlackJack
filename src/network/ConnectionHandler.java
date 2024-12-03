@@ -34,8 +34,6 @@ public class ConnectionHandler implements Runnable{
 					Object clientObj = input.readObject();
 					System.out.println("client" + clientObj.toString());
 					Message msg = (Message) clientObj;
-					
-					System.out.println("in the client handler");
 //					if (clientObj instanceof Message) {
 //					messages.add((Message) clientObj);
 //					}
