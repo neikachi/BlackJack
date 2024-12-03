@@ -1,8 +1,16 @@
 package deckManagement;
+
 public class Card {
+    private final Suit suit;
+    private final Rank rank;
+
     public enum Suit { HEARTS, DIAMONDS, CLUBS, SPADES }
-    public enum Rank { TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9), TEN(10),
-        JACK(10), QUEEN(10), KING(10), ACE(11); //add a value for one 
+
+    public enum Rank {
+        TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7),
+        EIGHT(8), NINE(9), TEN(10),
+        JACK(10), QUEEN(10), KING(10),
+        ACE(1);  // Default ACE value is 1
 
         private final int value;
 
@@ -13,16 +21,7 @@ public class Card {
         public int getValue() {
             return value;
         }
-        
-        // Method to get ACE as either 1 or 11
-        public int getAlternateValue() {
-            return this == ACE ? 1 : value;
-        }
-        
     }
-
-    private final Suit suit;
-    private final Rank rank;
 
     public Card(Suit suit, Rank rank) {
         this.suit = suit;
@@ -40,9 +39,4 @@ public class Card {
     public int getValue() {
         return rank.getValue();
     }
-
-    public int getAlternateValue() {
-        return rank.getAlternateValue();
-    }
-
 }

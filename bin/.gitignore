@@ -1,7 +1,11 @@
+/user/
+/deckManagement/
 /network/
-<<<<<<< HEAD
-=======
-/GameManager/
 /resources/
+<<<<<<< HEAD
 >>>>>>> d3b23c1e7ae8302c9f4d820905b1ad477d527fca
 /deckManagement/
+=======
+/GameManager/
+/gui/
+>>>>>>> 2d7fe23513c48610bd650e0e077a328e507f7b26
