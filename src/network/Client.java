@@ -23,8 +23,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import gui.PlayerDealerGUI;
+import gui.IPAddressGUI;
 
 public class Client {
+	
+	public Client() {
+		
+	}
 	
 	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
 		try {
@@ -38,7 +43,7 @@ public class Client {
 
 	public static void main(String[] args) throws ClassNotFoundException {
 
-		String host = IPAddressGUI();
+		 String host = new IPAddressGUI().output();
 		
 		try (Socket socket = new Socket(host, 7777);
 				ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
@@ -46,8 +51,6 @@ public class Client {
 			) {
 			
 			registerGUI(output);
-//			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
-//			output.flush();
 			
 			while (true) {
                 try {
@@ -62,7 +65,7 @@ public class Client {
                     if (serverMessage.getRole().equals("player") && serverMessage.getContent().equals("login successful")) {
                     	// show the player gui
                     	new PlayerDealerGUI(new Client(), false);
-                    } else if (serverMessage.getRole().equals("dealer") && serverMessage.getContent().equals("login successful") {
+                    } else if (serverMessage.getRole().equals("dealer") && serverMessage.getContent().equals("login successful")) {
                     	// 
              
                     }
@@ -82,60 +85,60 @@ public class Client {
 		}
 	}
 	
-	private static String IPAddressGUI() {
-	    final String[] res = {null};
-	    
-	    JFrame frame = new JFrame("Connect to Server");
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    frame.setSize(400, 200);
-	    
-	    JPanel panel = new JPanel();
-	    panel.setLayout(new GridLayout(3, 1));
-	    
-	    JLabel label = new JLabel("Enter IP Address to Connect:");
-	    label.setHorizontalAlignment(SwingConstants.CENTER);
-	    panel.add(label);
-	    
-	    JTextField ipField = new JTextField();
-	    panel.add(ipField);
-	    
-	    JButton connectButton = new JButton("Connect");
-	    panel.add(connectButton);
-	    
-	    frame.add(panel);
-	    
-	    // Block execution using a lock
-	    final Object lock = new Object();
-	    
-	    connectButton.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            String ipAddress = ipField.getText().trim();
-	            if (!ipAddress.isEmpty()) {
-	                res[0] = ipAddress;
-	                JOptionPane.showMessageDialog(frame, "Connecting to: " + ipAddress);
-	                synchronized (lock) {
-	                    lock.notify();
-	                }
-	                frame.dispose();
-	            } else {
-	                JOptionPane.showMessageDialog(frame, "IP Address cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-	            }
-	        }
-	    });
-	    
-	    frame.setVisible(true);
-	    
-	    synchronized (lock) {
-	        try {
-	            lock.wait();
-	        } catch (InterruptedException ex) {
-	            ex.printStackTrace();
-	        }
-	    }
-	    
-	    return res[0];
-	}
+//	private static String IPAddressGUI() {
+//	    final String[] res = {null};
+//	    
+//	    JFrame frame = new JFrame("Connect to Server");
+//	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//	    frame.setSize(400, 200);
+//	    
+//	    JPanel panel = new JPanel();
+//	    panel.setLayout(new GridLayout(3, 1));
+//	    
+//	    JLabel label = new JLabel("Enter IP Address to Connect:");
+//	    label.setHorizontalAlignment(SwingConstants.CENTER);
+//	    panel.add(label);
+//	    
+//	    JTextField ipField = new JTextField();
+//	    panel.add(ipField);
+//	    
+//	    JButton connectButton = new JButton("Connect");
+//	    panel.add(connectButton);
+//	    
+//	    frame.add(panel);
+//	    
+//	    // Block execution using a lock
+//	    final Object lock = new Object();
+//	    
+//	    connectButton.addActionListener(new ActionListener() {
+//	        @Override
+//	        public void actionPerformed(ActionEvent e) {
+//	            String ipAddress = ipField.getText().trim();
+//	            if (!ipAddress.isEmpty()) {
+//	                res[0] = ipAddress;
+//	                JOptionPane.showMessageDialog(frame, "Connecting to: " + ipAddress);
+//	                synchronized (lock) {
+//	                    lock.notify();
+//	                }
+//	                frame.dispose();
+//	            } else {
+//	                JOptionPane.showMessageDialog(frame, "IP Address cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+//	            }
+//	        }
+//	    });
+//	    
+//	    frame.setVisible(true);
+//	    
+//	    synchronized (lock) {
+//	        try {
+//	            lock.wait();
+//	        } catch (InterruptedException ex) {
+//	            ex.printStackTrace();
+//	        }
+//	    }
+//	    
+//	    return res[0];
+//	}
 	
 	private static void registerGUI(ObjectOutputStream output) {
 		JFrame frame = new JFrame("Register");
