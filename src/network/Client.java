@@ -8,13 +8,21 @@ import java.util.Scanner;
 
 public class Client {
 	
+	private Socket socket;
 	private ObjectInputStream inputStream;	
 	private ObjectOutputStream outputStream;
 
-	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
+    // Constructor for initializing connection
+    public Client(String host, int port) throws IOException {
+        Socket socket = new Socket(host, port);
+        outputStream = new ObjectOutputStream(socket.getOutputStream());
+        inputStream = new ObjectInputStream(socket.getInputStream());
+    }
+	
+	public void sendMessageToServer(Message guiMsg) {
 		try {
-			output.writeObject(guiMsg);
-			output.flush();
+			outputStream.writeObject(guiMsg);
+			outputStream.flush();
 			
 		} catch (IOException e) {
 			e.getStackTrace();
@@ -35,7 +43,7 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException {
-		// TODO Auto-generated method stub
+
 		String ipAddress;
 		Scanner sc = new Scanner(System.in);
 		
@@ -46,7 +54,7 @@ public class Client {
 			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 			
-			sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"), output);
+			client.sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"));
 //			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
 //			output.flush();
 			
