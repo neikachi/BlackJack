@@ -10,16 +10,16 @@ public class Game {
 	private static int count = 0;
 	private final String id;
 	private boolean hasDealer;
-	private List<Player> players;
+	private List<User> users;
 	
 	public Game() {
 		this.id = Integer.toString(count ++);
 		this.hasDealer = false;
-		this.players = new ArrayList<>();
+		this.users = new ArrayList<>();
 	}
 	
 	public Boolean gameFull() {
-		if (hasDealer && this.players.size() >= 4) {
+		if (hasDealer && this.users.size() >= 4) {
 			return false;
 		}
 		return true;

@@ -117,18 +117,18 @@ public class ConnectionHandler implements Runnable{
 		if (nextMsg.getRole().equals("dealer")) {
 			Game newGame = this.server.createGame();
 			this.setGameInstanceId(newGame.getGameId());
-//			Dealer dealer = Dealer(nextMsg.getUsername(), output, input);
-//			newGame.addDealer(dealer);
-			output.writeObject(new Message("login", "server", "login successful...adding to game as dealer"));
+			Dealer dealer = Dealer(nextMsg.getUsername(), nextMsg.getPassword(), id);
+			newGame.addUser(dealer);
+			output.writeObject(new Message("login", "server", "login successful."));
 			output.flush();
 		} else {
 			Game existingGame = this.server.findAvailableGame();
 			
 			if (existingGame != null) {
 				this.setGameInstanceId(existingGame.getGameId());
-//				Player player = Player(nextMsg.getUsername(), output, input);
-//				existingGame.addPlayer(player);
-				output.writeObject(new Message("login", "server", "login successful...adding to game as player"));
+				Player player = Player(nextMsg.getUsername(), nextMsg.getPassword(), id);
+				existingGame.addUser(player);
+				output.writeObject(new Message("login", "server", "login successful."));
 				output.flush();
 			} else {
 				output.writeObject(new Message("login", "server", "No available games found, please try again later"));

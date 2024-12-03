@@ -1,6 +1,5 @@
 package network;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,7 +36,6 @@ public class Client {
 				ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 			) {
-			boolean registered = false;
 			
 			registerGUI(output);
 			
@@ -48,11 +46,10 @@ public class Client {
                     System.out.println(serverMessage.getContent());
                     // updateGUI(serverMessage); // Replace with your GUI update logic
                     if (serverMessage.getContent().equals("Registration successful.")) {
-                    	registered = true;
+  
+                    	loginGUI(output);
                     }
-                    if (serverMessage.getContent().equals("Registration successful.")) {
-                    	loginGUI(output, registered);
-                    }
+      
                 } catch (IOException | ClassNotFoundException e) {
                     // Handle network or data format exceptions
                     e.printStackTrace();
@@ -147,12 +144,19 @@ public class Client {
 	    panel.add(passwordField);
 	    
 	    JPanel buttonPanel = new JPanel();
+	    JButton loginButton = new JButton("login");
 		JButton registerButton = new JButton("Register");
+		buttonPanel.add(loginButton);
 		buttonPanel.add(registerButton);
 		panel.add(buttonPanel);
 		
 		frame.add(panel);
 		frame.setVisible(true);
+		
+		loginButton.addActionListener(e -> {
+			loginGUI(output);
+			frame.dispose();
+		});
 	    
 		  registerButton.addActionListener(e -> {
 	            String role = roleField.getText().trim();
@@ -166,7 +170,7 @@ public class Client {
 	       });
 	}
 	
-	private static void loginGUI(ObjectOutputStream output, boolean registered) {
+	private static void loginGUI(ObjectOutputStream output) {
 		JFrame frame = new JFrame("Login");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(600,400);
@@ -197,10 +201,7 @@ public class Client {
 		buttonPanel.add(registerButton);
 		panel.add(buttonPanel);
 		
-		if (registered) {
-			JLabel bottomText = new JLabel("Registration successful...continue login", SwingConstants.CENTER);
-			panel.add(bottomText, BorderLayout.SOUTH);
-		}
+	
 		
 	
 		frame.add(panel);
@@ -219,6 +220,7 @@ public class Client {
 		
 		registerButton.addActionListener(e -> {
 			registerGUI(output);
+			frame.dispose();
 		});
 	}
 }	
