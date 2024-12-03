@@ -22,6 +22,8 @@ public class Player extends User {
         this.currentBet = 0.0;
         this.status = status.ACTIVE;
     }
+    
+    // comment
 
     
     // Methods
