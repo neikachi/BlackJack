@@ -160,13 +160,28 @@ public class Game {
 
     // Dealer Actions
     private Message processDealerAction(Message message, int threadId) {
-        if (dealer != null) {
-            dealer.playTurn(deckCollection);
-            dealer.setStatus(Dealer.Status.STANDING);
-            return new Message("success", "server", "Dealer action processed.");
+    	
+        String action = message.getContent();
+
+        if (action.equalsIgnoreCase("dealerHit")) {
+            dealer.hit(deckCollection);
+            return new Message("success", "server", "Dealer hits and draws a card.");
+        } else if (action.equalsIgnoreCase("deal")) {
+            return dealCardToPlayer(threadId); // Use the new dealCardToPlayer method
         }
+            
         return new Message("error", "server", "Dealer not found.");
     }
+    	
+	 // Method to deal a card to a specific player
+	 public Message dealCardToPlayer(int threadId) {
+	     Player player = findPlayerByThreadId(threadId); // Locate the player by thread ID
+	     if (player != null && dealer != null) {
+	         dealer.dealCard(player, deckCollection); // Use the Dealer's dealCard method
+	         return new Message("success", "server", "Card dealt to player: " + player.getUsername());
+	     }
+	     return new Message("error", "server", "Dealer or player not found.");
+	 }
 
     // Helper Methods
     private Player findPlayerByThreadId(int threadId) {

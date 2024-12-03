@@ -14,15 +14,15 @@ public class Client {
 
     // Constructor for initializing connection
     public Client(String host, int port) throws IOException {
-        this.socket = new Socket(host, port);
-        this.outputStream = new ObjectOutputStream(socket.getOutputStream());
-        this.inputStream = new ObjectInputStream(socket.getInputStream());
+        Socket socket = new Socket(host, port);
+        outputStream = new ObjectOutputStream(socket.getOutputStream());
+        inputStream = new ObjectInputStream(socket.getInputStream());
     }
 	
-	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
+	public void sendMessageToServer(Message guiMsg) {
 		try {
-			output.writeObject(guiMsg);
-			output.flush();
+			outputStream.writeObject(guiMsg);
+			outputStream.flush();
 			
 		} catch (IOException e) {
 			e.getStackTrace();
@@ -54,7 +54,7 @@ public class Client {
 			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 			ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 			
-			sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"), output);
+			client.sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"));
 //			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
 //			output.flush();
 			
