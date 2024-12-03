@@ -1,5 +1,6 @@
 package network;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,16 +37,22 @@ public class Client {
 				ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
 			) {
+			boolean registered = false;
 			
-			loginGUI(output);
+			registerGUI(output);
 			
 			while (true) {
                 try {
-                    // Read server response and update GUI (placeholder)
                     Object serverResponse = input.readObject();
                     Message serverMessage = (Message) serverResponse;
                     System.out.println(serverMessage.getContent());
                     // updateGUI(serverMessage); // Replace with your GUI update logic
+                    if (serverMessage.getContent().equals("Registration successful.")) {
+                    	registered = true;
+                    }
+                    if (serverMessage.getContent().equals("Registration successful.")) {
+                    	loginGUI(output, registered);
+                    }
                 } catch (IOException | ClassNotFoundException e) {
                     // Handle network or data format exceptions
                     e.printStackTrace();
@@ -116,10 +123,53 @@ public class Client {
 	    return res[0];
 	}
 	
-	private static void loginGUI(ObjectOutputStream output) {
-		JFrame frame = new JFrame("Login");
+	private static void registerGUI(ObjectOutputStream output) {
+		JFrame frame = new JFrame("Register");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(400,300);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(5,1));
+		
+		JLabel roleLabel = new JLabel("role: ");
+		JTextField roleField = new JTextField();
+		panel.add(roleLabel);
+		panel.add(roleField);
+		
+		JLabel userLabel = new JLabel("Username: ");
+		JTextField usernameField = new JTextField();
+		panel.add(userLabel);
+		panel.add(usernameField);
+		
+		JLabel passLabel = new JLabel("Password:");
+	    JPasswordField passwordField = new JPasswordField();
+	    panel.add(passLabel);
+	    panel.add(passwordField);
+	    
+	    JPanel buttonPanel = new JPanel();
+		JButton registerButton = new JButton("Register");
+		buttonPanel.add(registerButton);
+		panel.add(buttonPanel);
+		
+		frame.add(panel);
+		frame.setVisible(true);
+	    
+		  registerButton.addActionListener(e -> {
+	            String role = roleField.getText().trim();
+	            String username = usernameField.getText().trim();
+	            String password = new String(passwordField.getPassword()).trim();
+	            if (!username.isEmpty() && !password.isEmpty()) {
+	                sendMessageToServer(new Message("register", role, username, password, "Attempting to register"), output);
+	          
+	                frame.dispose();
+	            }
+	       });
+	}
+	
+	private static void loginGUI(ObjectOutputStream output, boolean registered) {
+		JFrame frame = new JFrame("Login");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,400);
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(5,1));
@@ -142,10 +192,17 @@ public class Client {
 		JPanel buttonPanel = new JPanel();
 		JButton loginButton = new JButton("login");
 		JButton registerButton = new JButton("Register");
+		
 		buttonPanel.add(loginButton);
 		buttonPanel.add(registerButton);
 		panel.add(buttonPanel);
 		
+		if (registered) {
+			JLabel bottomText = new JLabel("Registration successful...continue login", SwingConstants.CENTER);
+			panel.add(bottomText, BorderLayout.SOUTH);
+		}
+		
+	
 		frame.add(panel);
 		frame.setVisible(true);
 		
@@ -156,7 +213,12 @@ public class Client {
 			
 			if (!username.isEmpty() && !password.isEmpty()) {
 				sendMessageToServer(new Message("login", role, username, password, "attempting to login"), output);
+				frame.dispose();
 			}
+		});
+		
+		registerButton.addActionListener(e -> {
+			registerGUI(output);
 		});
 	}
 }	
