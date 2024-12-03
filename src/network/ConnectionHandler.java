@@ -34,8 +34,6 @@ public class ConnectionHandler implements Runnable{
 					Object clientObj = input.readObject();
 					System.out.println("client" + clientObj.toString());
 					Message msg = (Message) clientObj;
-					
-					System.out.println("in the client handler");
 //					if (clientObj instanceof Message) {
 //					messages.add((Message) clientObj);
 //					}
@@ -84,6 +82,10 @@ public class ConnectionHandler implements Runnable{
 	
 	///////// helper methods
 	
+	private Game getAssignedGame() {
+		return this.server.getActiveGameById(this.getGameInstanceId());
+	}
+	
 	private void processClientMessage(Message msg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
 	    System.out.println("Processing message from client: " + msg.getContent());
 	    if (!this.getIsLoggedIn()) {
@@ -110,47 +112,23 @@ public class ConnectionHandler implements Runnable{
 	        output.flush();
 	    }
 	}
-
-	
-//	private void processClientMessage(Message msg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
-//		if (this.getIsLoggedIn() == false) {
-//			if (this.server.credentialsInDatabase(msg.getUsername(), msg.getPassword())) {
-//				this.loginUserToGame(msg, output, input);
-//			} else {
-//				this.server.registerUserInDatabase(msg.getRole(), msg.getUsername(), msg.getPassword());
-//			}
-//			this.setIsLoggedIn(true);
-//		}
-//		
-//		Game currGame = this.getAssignedGame();
-//		
-//		if (currGame != null) {
-//			Message res = currGame.processGameMessage(msg, this.getThreadId());
-//			output.writeObject(res);
-//			output.flush();
-//		} else {
-//			output.writeObject(new Message("playerAction", "server", "there was an error finding the game"));
-//			output.flush();
-//		}
-//		
-//	}
 	
 	private void loginUserToGame(Message nextMsg, ObjectOutputStream output, ObjectInputStream input) throws IOException {
 		if (nextMsg.getRole().equals("dealer")) {
 			Game newGame = this.server.createGame();
 			this.setGameInstanceId(newGame.getGameId());
-//			Dealer dealer = Dealer(nextMsg.getUsername(), output, input);
-//			newGame.addDealer(dealer);
-			output.writeObject(new Message("login", "server", "login successful...adding to game as dealer"));
+//			Dealer dealer = Dealer(nextMsg.getUsername(), nextMsg.getPassword(), id);
+//			newGame.addUser(dealer);
+			output.writeObject(new Message("login", "server", "login successful."));
 			output.flush();
 		} else {
 			Game existingGame = this.server.findAvailableGame();
 			
 			if (existingGame != null) {
 				this.setGameInstanceId(existingGame.getGameId());
-//				Player player = Player(nextMsg.getUsername(), output, input);
-//				existingGame.addPlayer(player);
-				output.writeObject(new Message("login", "server", "login successful...adding to game as player"));
+//				Player player = Player(nextMsg.getUsername(), nextMsg.getPassword(), id);
+//				existingGame.addUser(player);
+				output.writeObject(new Message("login", "server", "login successful."));
 				output.flush();
 			} else {
 				output.writeObject(new Message("login", "server", "No available games found, please try again later"));
@@ -158,9 +136,6 @@ public class ConnectionHandler implements Runnable{
 			}
 		}
 	}
-	
-	private Game getAssignedGame() {
-		return this.server.getActiveGameById(this.getGameInstanceId());
-	}
 
 }
+
