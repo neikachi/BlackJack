@@ -8,6 +8,9 @@ import java.util.Scanner;
 
 public class Client {
 	
+	private ObjectInputStream inputStream;	
+	private ObjectOutputStream outputStream;
+
 	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
 		try {
 			output.writeObject(guiMsg);
@@ -17,6 +20,15 @@ public class Client {
 			e.getStackTrace();
 		}
 	}
+	
+    // Receives a message from the server
+    public Message receiveMessageFromServer() throws IOException, ClassNotFoundException {
+        Object response = inputStream.readObject();
+        if (response instanceof Message) {
+            return (Message) response;
+        }
+        return null;
+    }
 	
 	public void disconnect() {
 		
