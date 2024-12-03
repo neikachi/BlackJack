@@ -60,6 +60,7 @@ public class PlayerDealerGUI {
         frame.add(panel);
         frame.setVisible(true);
 
+        
         // Action listeners for the buttons
         hitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -127,7 +128,7 @@ public class PlayerDealerGUI {
 
     public static void main(String[] args) {
         try {
-            Client client = new Client(); // Connect using robust client logic
+            Client client = new Client("localhost", 7777); // Connect using robust client logic
             new PlayerDealerGUI(client, false); // 'false' for player role
         } catch (Exception ex) {
             ex.printStackTrace();

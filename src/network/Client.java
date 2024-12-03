@@ -8,9 +8,17 @@ import java.util.Scanner;
 
 public class Client {
 	
+	private Socket socket;
 	private ObjectInputStream inputStream;	
 	private ObjectOutputStream outputStream;
 
+    // Constructor for initializing connection
+    public Client(String host, int port) throws IOException {
+        this.socket = new Socket(host, port);
+        this.outputStream = new ObjectOutputStream(socket.getOutputStream());
+        this.inputStream = new ObjectInputStream(socket.getInputStream());
+    }
+	
 	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
 		try {
 			output.writeObject(guiMsg);
@@ -35,7 +43,7 @@ public class Client {
 	}
 
 	public static void main(String[] args) throws ClassNotFoundException {
-		// TODO Auto-generated method stub
+
 		String ipAddress;
 		Scanner sc = new Scanner(System.in);
 		
