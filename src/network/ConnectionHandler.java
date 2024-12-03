@@ -117,8 +117,8 @@ public class ConnectionHandler implements Runnable{
 		if (nextMsg.getRole().equals("dealer")) {
 			Game newGame = this.server.createGame();
 			this.setGameInstanceId(newGame.getGameId());
-			Dealer dealer = Dealer(nextMsg.getUsername(), nextMsg.getPassword(), id);
-			newGame.addUser(dealer);
+//			Dealer dealer = Dealer(nextMsg.getUsername(), nextMsg.getPassword(), id);
+//			newGame.addUser(dealer);
 			output.writeObject(new Message("login", "server", "login successful."));
 			output.flush();
 		} else {
@@ -126,8 +126,8 @@ public class ConnectionHandler implements Runnable{
 			
 			if (existingGame != null) {
 				this.setGameInstanceId(existingGame.getGameId());
-				Player player = Player(nextMsg.getUsername(), nextMsg.getPassword(), id);
-				existingGame.addUser(player);
+//				Player player = Player(nextMsg.getUsername(), nextMsg.getPassword(), id);
+//				existingGame.addUser(player);
 				output.writeObject(new Message("login", "server", "login successful."));
 				output.flush();
 			} else {
@@ -138,3 +138,4 @@ public class ConnectionHandler implements Runnable{
 	}
 
 }
+
