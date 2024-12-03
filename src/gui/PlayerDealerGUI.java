@@ -2,15 +2,22 @@ package gui;
 
 import javax.swing.*;
 
+import deckManagement.Card;
 import network.Client;
 import network.Message;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerDealerGUI {
     private JFrame frame;
     private JPanel panel;
+    private JLabel playerHandLabel;
+    private JLabel dealerHandLabel;
+    private ArrayList<JLabel> otherPlayerHandLabels; // For multiple players' hands
     private JButton playerHitButton;
     private JButton dealerHitButton;
     private JButton splitButton;
@@ -19,17 +26,42 @@ public class PlayerDealerGUI {
     private JButton dealButton;
     private Client client; // Use the Client class for networking
     private boolean isDealer;
+    
+    private ArrayList<Card> playerHand;
+    private ArrayList<Card> dealerHand;
+    private ArrayList<List<Card>> otherPlayersHands; // To hold hands of other players
 
     public PlayerDealerGUI(Client client, boolean isDealer) {
         this.client = client;
         this.isDealer = isDealer;
+        this.playerHand = new ArrayList<>();
+        this.dealerHand = new ArrayList<>();
+        this.otherPlayersHands = new ArrayList<>();
+        this.otherPlayerHandLabels = new ArrayList<>();
 
         frame = new JFrame("Blackjack Game");
         panel = new JPanel();
-        frame.setSize(400, 200);
+        frame.setSize(600, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        panel.setLayout(null); // You can switch to a layout manager for better scaling
+        panel.setLayout(new GridLayout(5, 1)); // You can switch to a layout manager for better scaling
 
+        
+        // Player Hand
+        playerHandLabel = new JLabel("Player's Hand: ");
+        panel.add(playerHandLabel);
+
+        // Dealer Hand
+        dealerHandLabel = new JLabel("Dealer's Hand: ");
+        panel.add(dealerHandLabel);
+
+        // Other Players' Hands
+        // Max 4 players (and the dealer)
+        for (int i = 0; i < 4; i++) {
+            JLabel otherPlayerLabel = new JLabel("Other Player " + (i+1) + "'s Hand: ");
+            otherPlayerHandLabels.add(otherPlayerLabel);
+            panel.add(otherPlayerLabel);
+        }
+        
         // Create buttons
         playerHitButton = new JButton("Hit");
         playerHitButton.setBounds(10, 20, 100, 25);
@@ -128,12 +160,17 @@ public class PlayerDealerGUI {
         }
     }
 
-    private void listenForServerUpdates() {
+    public void listenForServerUpdates() {
         try {
             while (true) {
                 Message message = client.receiveMessageFromServer();
                 if (message != null) {
-                    handleServerUpdate(message);
+                    if (message.getType().equals("updateHand")) {
+                        // Get the content (string representation of the hand)
+                        String handString = (String) message.getContent();
+                        
+                        // Parse the string into a List<Card>
+                    }
                 }
             }
         } catch (Exception ex) {
