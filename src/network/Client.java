@@ -22,10 +22,21 @@ import javax.swing.SwingConstants;
 
 public class Client {
 	
-	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
+	private Socket socket;
+	private ObjectInputStream inputStream;	
+	private ObjectOutputStream outputStream;
+
+    // Constructor for initializing connection
+    public Client(String host, int port) throws IOException {
+        Socket socket = new Socket(host, port);
+        outputStream = new ObjectOutputStream(socket.getOutputStream());
+        inputStream = new ObjectInputStream(socket.getInputStream());
+    }
+	
+	public void sendMessageToServer(Message guiMsg) {
 		try {
-			output.writeObject(guiMsg);
-			output.flush();
+			outputStream.writeObject(guiMsg);
+			outputStream.flush();
 			
 		} catch (IOException e) {
 			e.getStackTrace();
@@ -34,6 +45,27 @@ public class Client {
 
 	public static void main(String[] args) throws ClassNotFoundException {
 		String host = IPAddressGUI();
+	
+    // Receives a message from the server
+    public Message receiveMessageFromServer() throws IOException, ClassNotFoundException {
+        Object response = inputStream.readObject();
+        if (response instanceof Message) {
+            return (Message) response;
+        }
+        return null;
+    }
+	
+	public void disconnect() {
+		
+	}
+
+	public static void main(String[] args) throws ClassNotFoundException {
+
+		String ipAddress;
+		Scanner sc = new Scanner(System.in);
+		
+		System.out.println("Enter ip address to connect to: ");
+		String host = sc.next();
 		
 		try (Socket socket = new Socket(host, 7777);
 				ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
@@ -41,6 +73,9 @@ public class Client {
 			) {
 			
 			registerGUI(output);
+			client.sendMessageToServer(new Message("login", "player", "c.mill3", "password1234!", "content"));
+//			output.writeObject(new Message("login", "dealer", "testingPlayer1", "player123", "content"));
+//			output.flush();
 			
 			while (true) {
                 try {
