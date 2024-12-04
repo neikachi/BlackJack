@@ -20,21 +20,22 @@ public class Game {
     private Dealer dealer;
     private List<Player> players;
     private DeckCollection deckCollection;
-    private Status gameStatus;
+    private gameStatus gameStatus;
     private Map<Integer, Player> threadToPlayerMap; // Mapping thread IDs to players
+    private int threadId;
 
     // Enum for game status
-    public enum Status {
+    public enum gameStatus {
         WAITING, IN_PROGRESS, FINISHED
     }
 
     // Constructor
     public Game() {
         this.id = Integer.toString(count++);
-        this.hasDealer = false;
+        this.hasDealer = true;
         this.players = new ArrayList<>();
         this.deckCollection = new DeckCollection();
-        this.gameStatus = Status.WAITING;
+        this.gameStatus = gameStatus.WAITING;
         this.threadToPlayerMap = new HashMap<>();
     }
 
@@ -51,7 +52,7 @@ public class Game {
         return players;
     }
 
-    public Status getGameStatus() {
+    public gameStatus getGameStatus() {
         return gameStatus;
     }
 
@@ -97,12 +98,15 @@ public class Game {
             player.resetHand();
             player.setStatus(Player.Status.ACTIVE);
         }
-        gameStatus = Status.IN_PROGRESS;
+        gameStatus = gameStatus.IN_PROGRESS;
         System.out.println("Game started! Deck shuffled and ready.");
     }
 
     // Process Messages
     public Message processGameMessage(Message message, int threadId) {
+    	
+    	this.threadId = threadId;
+    	
         if (message.getRole().equals("player")) {
             return this.processPlayerAction(message, threadId);
         } else {
@@ -116,49 +120,49 @@ public class Game {
         if (player != null) {
             String action = message.getContent(); // Assuming action is stored in content
             processPlayerAction(player, action);
-            return new Message("action", "player", "Player action" + action + "processed.");
+            return processGameMessage(new Message("action", "player", action), threadId);
         }
-        return new Message("error", "server", "Player not found.");
+        return processGameMessage(new Message("error", "server", "Player not found."), threadId);
     }
 
-    private void processPlayerAction(Player player, String action) {
+    private Message processPlayerAction(Player player, String action) {
+  
         switch (action.toUpperCase()) {
             case "HIT":
-                Card card = deckCollection.dealCard();
-                if (card != null) {
-                    player.hit(card);
-                }
-                break;
+                // Create a message to notify the dealer to deal a card
+                return processGameMessage(new Message("hitRequest", "game", "Player " + player.getUsername() + " requests a hit."), this.threadId);
             case "STAND":
-                player.setStatus(Player.Status.STANDING);
-                break;
+                return processGameMessage(new Message("playerAction", "player", action), this.threadId);
             case "DOUBLE_DOWN":
                 if (player.getBalance() >= player.getCurrentBet()) {
                     player.placeBet(player.getCurrentBet()); // Double the bet
                     Card doubleDownCard = deckCollection.dealCard();
                     if (doubleDownCard != null) {
                         player.doubleDown(doubleDownCard);
+                        return null;
                     }
                 } else {
                     System.out.println("Insufficient funds to double down.");
+                    return null;
                 }
-                break;
             case "SPLIT":
                 if (player.canSplit()) {
                     Card firstCard = player.getHand().get(0);
                     Card secondCard = player.getHand().get(1);
                     player.split(firstCard, secondCard);
                     // Deal one card to each split hand
+                    processGameMessage( new Message("playerAction", "player", "update_player_cards"), this.threadId);
+                    processGameMessage( new Message("playerAction", "player", "update_player_cards"), this.threadId);
                     player.hitSplitHand(0, deckCollection.dealCard());
                     player.hitSplitHand(1, deckCollection.dealCard());
                 } else {
-                    System.out.println("Cannot split. First two cards must be identical.");
+                	return processGameMessage(new Message("error", "server", "Cannot split. First two cards must be identical."), this.threadId);
                 }
-                break;
             default:
-                System.out.println("Invalid action: " + action);
+            	return processGameMessage(new Message("error", "server", "Invalid action: " + action), this.threadId);
         }
-    }
+                
+      }
 
     // Dealer Actions
     private Message processDealerAction(Message message, int threadId) {
@@ -171,10 +175,10 @@ public class Game {
         } else if (action.equalsIgnoreCase("deal")) {
         	Player player = findPlayerByThreadId(threadId);
             dealCardToPlayer(threadId); // Use the new dealCardToPlayer method
-            return new Message("dealerAction", "dealer", "Dealer deals" + dealCardToPlayer(threadId).getContent() + "to " + player);
+            return processGameMessage(new Message("dealerAction", "dealer", "Dealer deals" + dealCardToPlayer(threadId).getContent() + "to " + player), threadId);
         }
             
-        return new Message("error", "server", "Dealer not found.");
+        return processGameMessage(new Message("error", "server", "Dealer not found."), threadId);
     }
     	
 	 // Method to deal a card to a specific player
@@ -182,9 +186,9 @@ public class Game {
 	     Player player = findPlayerByThreadId(threadId); // Locate the player by thread ID
 	     if (player != null && dealer != null) {
 	         dealer.dealCard(player, deckCollection); // Use the Dealer's dealCard method
-	         return new Message("dealerAction", "dealer", "Card dealt to player: " + player.getUsername());
+	         return processGameMessage(new Message("dealerAction", "dealer", "Card dealt to player: " + player.getUsername()), threadId);
 	     }
-	     return new Message("error", "server", "Dealer or player not found.");
+	     return processGameMessage(new Message("error", "server", "Dealer or player not found."), threadId);
 	 }
 
     // Helper Methods

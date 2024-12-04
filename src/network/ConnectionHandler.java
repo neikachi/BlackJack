@@ -16,14 +16,12 @@ public class ConnectionHandler implements Runnable{
 	private final int id;
 	private Socket connection;
 	private MainServer server;
-	private ConcurrentLinkedQueue<Message> messages;
 	private boolean isLoggedIn;
 	private String gameInstanceId;
 	
 	public ConnectionHandler(Socket currConnection, MainServer server) {
 		this.connection = currConnection;
 		this.server = server;
-		this.messages = new ConcurrentLinkedQueue<>();
 		this.isLoggedIn = false;
 		this.id = count ++;
 	}
@@ -37,19 +35,8 @@ public class ConnectionHandler implements Runnable{
 					Object clientObj = input.readObject();
 					System.out.println("client" + clientObj.toString());
 					Message msg = (Message) clientObj;
-//					if (clientObj instanceof Message) {
-//					messages.add((Message) clientObj);
-//					}
-					
-//					Message nextMsg = messages.poll();
-					
-//					if (msg.getType().equals("login")) {
-//						output.writeObject("hello from the server");
-//					}
-					
-//					if (msg != null) {
+
 					this.processClientMessage(msg, output, input);
-//					}
 				}
 			
 		} catch (Exception e) {
@@ -122,7 +109,7 @@ public class ConnectionHandler implements Runnable{
 			this.setGameInstanceId(newGame.getGameId());
 			Dealer dealer = new Dealer(nextMsg.getUsername(), nextMsg.getPassword());
 			newGame.addDealer(dealer);
-			output.writeObject(new Message("login", "server", "login successful."));
+			output.writeObject(new Message("login", "dealer", "login successful."));
 			output.flush();
 		} else {
 			Game existingGame = this.server.findAvailableGame();
