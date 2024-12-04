@@ -1,5 +1,7 @@
 package GameManager;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +116,7 @@ public class Game {
         if (player != null) {
             String action = message.getContent(); // Assuming action is stored in content
             processPlayerAction(player, action);
-            return new Message("success", "server", "Player action processed.");
+            return new Message("action", "player", "Player action" + action + "processed.");
         }
         return new Message("error", "server", "Player not found.");
     }
@@ -165,9 +167,11 @@ public class Game {
 
         if (action.equalsIgnoreCase("dealerHit")) {
             dealer.hit(deckCollection);
-            return new Message("success", "server", "Dealer hits and draws a card.");
+            return new Message("dealerAction", "dealer", "Dealer hits and draws a card.");
         } else if (action.equalsIgnoreCase("deal")) {
-            return dealCardToPlayer(threadId); // Use the new dealCardToPlayer method
+        	Player player = findPlayerByThreadId(threadId);
+            dealCardToPlayer(threadId); // Use the new dealCardToPlayer method
+            return new Message("dealerAction", "dealer", "Dealer deals" + dealCardToPlayer(threadId).getContent() + "to " + player);
         }
             
         return new Message("error", "server", "Dealer not found.");
@@ -178,7 +182,7 @@ public class Game {
 	     Player player = findPlayerByThreadId(threadId); // Locate the player by thread ID
 	     if (player != null && dealer != null) {
 	         dealer.dealCard(player, deckCollection); // Use the Dealer's dealCard method
-	         return new Message("success", "server", "Card dealt to player: " + player.getUsername());
+	         return new Message("dealerAction", "dealer", "Card dealt to player: " + player.getUsername());
 	     }
 	     return new Message("error", "server", "Dealer or player not found.");
 	 }
@@ -188,6 +192,17 @@ public class Game {
         return threadToPlayerMap.get(threadId); // Retrieve player by thread ID
     }
 
+//    // Method to send message objects back to client
+//    private void sendMessageToClient(Message message, ObjectOutputStream output) {
+//		try {
+//			output.writeObject(message);
+//			output.flush();
+//			
+//		} catch (IOException e) {
+//			e.getStackTrace();
+//		}
+//	}
+    
     // Reset Game
     public void resetGame() {
         dealer.resetHand();
