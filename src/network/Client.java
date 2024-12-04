@@ -4,15 +4,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import gui.PlayerDealerGUI;
 import gui.RegisterGUI;
+import gui.GameGUI;
 import gui.IPAddressGUI;
 import gui.LoginGUI;
 
 public class Client {
+	 static GameGUI gameGUI;
 	
 	public static void sendMessageToServer(Message guiMsg, ObjectOutputStream output) {
 		try {
@@ -27,6 +29,7 @@ public class Client {
 	public static void main(String[] args) throws ClassNotFoundException {
 
 		 String host = new IPAddressGUI().output();
+		 
 		
 		try (Socket socket = new Socket(host, 7777);
 				ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
@@ -46,14 +49,30 @@ public class Client {
                     	new LoginGUI(output).outputGUI();
                     }
                     
-                    if (serverMessage.getRole().equals("player") && serverMessage.getContent().equals("login successful")) {
+                    if (serverMessage.getContent().equals("login successful")) {
                     	// show the player gui
                     	JOptionPane.showMessageDialog(null, serverMessage.getContent());
-                    	new PlayerDealerGUI(new Client(), false);
-                    } else if (serverMessage.getRole().equals("dealer") && serverMessage.getContent().equals("login successful")) {
-                    	// 
-             
+                    	boolean isDealer = false;
+                    	
+                    	if (serverMessage.getRole().equals("dealer")) {
+                    		isDealer = true;
+                    	}
+                    	
+                    	gameGUI = new GameGUI();
+                    	
+                    } else if (serverMessage.getContent().equals("update_dealer_cards")) {
+                        List<String> dealerCards = serverMessage.getCards(); // Assuming this is provided
+                        gameGUI.updateDealerCards(dealerCards);
+                    } else if (serverMessage.getContent().equals("update_player_cards")) {
+                        List<String> playerCards = serverMessage.getCards(); // Assuming this is provided
+                        gameGUI.updatePlayerCards(playerCards);
+                    } else if (serverMessage.getContent().equals("update_status")) {
+                        String status = serverMessage.getType(); // Assuming this is provided
+                        gameGUI.updateStatus(status);
                     }
+                    
+                    
+                    
       
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
