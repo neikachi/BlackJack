@@ -1,15 +1,4 @@
 /user/
-/deckManagement/
-/network/
-/resources/
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> d3b23c1e7ae8302c9f4d820905b1ad477d527fca
-/deckManagement/
-=======
-=======
-/deckManagement/
->>>>>>> 6330e5c36899a97e5ea94a58688aa7c9544a51eb
 /GameManager/
-/gui/
->>>>>>> 2d7fe23513c48610bd650e0e077a328e507f7b26
+/deckManagement/
+/unitTests/

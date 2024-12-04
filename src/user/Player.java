@@ -6,38 +6,50 @@ import java.util.List;
 import deckManagement.Card;
 
 public class Player extends User {
+
     // Fields
+	
     private ArrayList<ArrayList<Card>> splitHands;  // Additional hand for split
     private double currentBet;
     private Status status;
     private int accBalance;
 
-
+ 
     // Constructor
     public Player(String username, String password, int accBalance, AccountType accountType) {
         super(username, password, accBalance, accountType);
         this.hand = new ArrayList<>();
         this.splitHands = null;  // Initialized during a split
         this.currentBet = 0.0;
-        this.accBalance = 0;
-        this.status = status.ACTIVE;
+        this.setAccBalance(accBalance);
+        this.status = Status.ACTIVE;
     }
     
     // comment
 
-    
-    // Methods
+    public void setStatus(Status playerStatus) {
+        this.status = playerStatus;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+    //method
     
  // Method to place a bet
     public void placeBet(double amount) {
-        if (amount > 0 && amount <= accBalance) {
+        System.out.println("Attempting to place bet: $" + amount);
+        System.out.println("Current balance before placing bet: $" + getAccBalance());
+        if (amount > 0 && amount <= getAccBalance()) {
             currentBet = amount;
-            accBalance -= amount;  // Deduct the bet from the balance
+            setAccBalance((int) (getAccBalance() - amount));
             System.out.println("Bet placed: $" + amount);
+            System.out.println("Current balance after placing bet: $" + getAccBalance());
         } else {
             System.out.println("Invalid bet amount or insufficient balance.");
         }
     }
+
 
     // Getter for the current bet
     public double getCurrentBet() {
@@ -54,13 +66,15 @@ public class Player extends User {
     }
 
     public void stand() {
-        this.status = status.STANDING;
-        System.out.println("Player stands.");
+        System.out.println("Current status before standing: " + this.status);
+        this.status = Status.STANDING; // Update the status to STANDING
+        System.out.println("Player stands. Status is now: " + this.status);
     }
 
+
     public void doubleDown(Card card) {
-        if (currentBet <= accBalance) {
-            accBalance -= currentBet;
+        if (currentBet <= getAccBalance()) {
+            setAccBalance((int) (getAccBalance() - currentBet));
             currentBet *= 2;
             hit(card);
             stand();  // Must stand after doubling down
@@ -71,36 +85,60 @@ public class Player extends User {
     }
 
     public boolean canSplit() {
-        if (hand.size() == 2 && hand.get(0).getRank() == hand.get(1).getRank()) {
-        	return true;
+        System.out.println("Checking if player can split...");
+        System.out.println("Hand size: " + hand.size());
+        if (hand.size() == 2) {
+            System.out.println("First card rank: " + hand.get(0).getRank());
+            System.out.println("Second card rank: " + hand.get(1).getRank());
+            if (hand.get(0).getRank() == hand.get(1).getRank()) {
+                return true;
+            }
         }
-        else {
-        	return false;
-        }
+        return false;
     }
     
-    public void split(Card firstCard, Card secondCard) {
+    public void split() {
         if (canSplit()) {
-        	// Initialize splitHands if it's not already initialized
-        	splitHands = new ArrayList<>();
+            // Initialize splitHands
+            splitHands = new ArrayList<>();
 
-        	// Create a new hand by removing a card from the original hand and adding it to the new hand
-        	ArrayList<Card> newHand = new ArrayList<>();
-        	newHand.add(hand.remove(1));  // Remove the second card from the original hand
-        	splitHands.add(newHand);  // Add the new hand (list of cards) to splitHands
+            // First hand: contains the first card
+            ArrayList<Card> firstHand = new ArrayList<>();
+            firstHand.add(hand.get(0));
+            splitHands.add(firstHand);
 
-        	// Create a second hand with the second card and add it to splitHands
-        	ArrayList<Card> secondHand = new ArrayList<>();
-        	secondHand.add(secondCard);  // Add the second card to a new hand
-        	splitHands.add(secondHand);  // Add the new hand (list of cards) to splitHands            System.out.println("Player split their hand.");
+            // Second hand: contains the second card
+            ArrayList<Card> secondHand = new ArrayList<>();
+            secondHand.add(hand.get(1));
+            splitHands.add(secondHand);
+
+            // Clear the original hand
+            hand.clear();
+
+            System.out.println("Player split their hand.");
         } else {
             System.out.println("Cannot split: Cards must be identical.");
         }
     }
+
     
     public void hitSplitHand(int handIndex, Card card) {
-    	if (handIndex >= 0 && handIndex < splitHands.size()) {
-    		splitHands.get(handIndex).add(card);
-    	}
+        if (splitHands != null && handIndex >= 0 && handIndex < splitHands.size()) {
+            splitHands.get(handIndex).add(card);
+            System.out.println("Player hits split hand " + handIndex + " and receives: " + card);
+        } else {
+            System.out.println("Invalid hand index or split hands not initialized.");
+        }
     }
+
+	public int getAccBalance() {
+		return accBalance;
+	}
+
+	public void setAccBalance(int accBalance) {
+		this.accBalance = accBalance;
+	}
+
+
 }
+

@@ -5,15 +5,14 @@ import java.util.List;
 
 import deckManagement.Card;
 
-public class User {
+public abstract class User {
 
     // Fields
-    private String username;
-    private String password;
+    protected String username;
+    protected String password;
     protected int accBalance; 
-    private AccountType accountType;
-    private Status status;
-    protected ArrayList<Card> hand;  // Added hand to manage shared functionality
+    protected AccountType accountType;
+    protected ArrayList<Card> hand;  // Shared functionality for managing cards
     
     // Enum for account type
     public enum AccountType {
@@ -25,6 +24,7 @@ public class User {
         ACTIVE, STANDING, BUSTED
     }
 
+    protected Status status;
     
     // Constructor
     public User(String username, String password, int accBalance, AccountType accountType) {
@@ -33,6 +33,7 @@ public class User {
         this.accBalance = accBalance;
         this.accountType = accountType;
         this.hand = new ArrayList<>();  // Initialize the hand here
+        this.status = Status.ACTIVE;   // Default status
     }
 
     // Getters and Setters
@@ -52,12 +53,12 @@ public class User {
         this.password = password;
     }
 
-    public double getBalance() {
+    public int getBalance() {
         return accBalance;
     }
 
-    public void setBalance(double balance) {
-        this.accBalance = accBalance;
+    public void setBalance(int balance) {
+        this.accBalance = balance;
     }
 
     public AccountType getAccountType() {
@@ -69,11 +70,11 @@ public class User {
     }
 
     public Status getStatus() {
-    	return status;
+        return status;
     }
     
     public void setStatus(Status status) {
-    	this.status = status;
+        this.status = status;
     }
     
     public List<Card> getHand() {
@@ -82,6 +83,7 @@ public class User {
     
     // Methods
 
+    // Calculate the total value of the user's hand
     public int getHandValue() {
         int value = 0;
         int aceCount = 0;
@@ -102,7 +104,21 @@ public class User {
         return value;
     }
 
+    // Reset the user's hand to an empty state
     public void resetHand() {
         hand.clear();
+    }
+
+    // Add a card to the user's hand
+    public void addCardToHand(Card card) {
+        hand.add(card);
+    }
+
+    // Print the user's current hand
+    public void printHand() {
+        System.out.println("Current hand for " + username + ":");
+        for (Card card : hand) {
+            System.out.println(card);
+        }
     }
 }
