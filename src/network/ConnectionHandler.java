@@ -109,7 +109,7 @@ public class ConnectionHandler implements Runnable{
 			this.setGameInstanceId(newGame.getGameId());
 			Dealer dealer = new Dealer(nextMsg.getUsername(), nextMsg.getPassword());
 			newGame.addDealer(dealer);
-			output.writeObject(new Message("login", "server", "login successful."));
+			output.writeObject(new Message("login", "dealer", "login successful."));
 			output.flush();
 		} else {
 			Game existingGame = this.server.findAvailableGame();

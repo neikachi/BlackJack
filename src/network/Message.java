@@ -1,6 +1,10 @@
 package network;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import deckManagement.Card;
 
 public class Message implements Serializable{
 	private static int count = 0;
@@ -10,6 +14,7 @@ public class Message implements Serializable{
 	protected String username;
 	protected String password;
 	protected String content;
+	protected ArrayList<Card> cards;
 	
 	public Message() {
 		this.type = "Undefined";
@@ -36,6 +41,17 @@ public class Message implements Serializable{
 		this.password = password;
 		this.content = content;
 		this.id = count ++;
+	}
+	
+	public Message(String type, String role, String content, ArrayList<Card> cards) {
+		this.type = type;
+		this.role = role;
+		this.username = "undefined";
+		this.password = "undefined";
+		this.content = content;
+		this.id = count ++;
+		this.cards = cards;
+		this.cards = new ArrayList<Card>();
 	}
 	
 	public int getId() {
@@ -74,4 +90,11 @@ public class Message implements Serializable{
 		this.content = content;
 	}
 	
+	public List<String> getCards() {
+        List<String> cardStrings = new ArrayList<>();
+        for (Card card : cards) {
+            cardStrings.add(card.toString()); // Assuming `Card` has a meaningful `toString()` method
+        }
+        return cardStrings;
+    }
 }
