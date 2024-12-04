@@ -10,6 +10,7 @@ public class Player extends User {
     private ArrayList<ArrayList<Card>> splitHands;  // Additional hand for split
     private double currentBet;
     private Status status;
+    private int accBalance;
 
 
     // Constructor
@@ -18,6 +19,7 @@ public class Player extends User {
         this.hand = new ArrayList<>();
         this.splitHands = null;  // Initialized during a split
         this.currentBet = 0.0;
+        this.accBalance = 0;
         this.status = status.ACTIVE;
     }
     
@@ -28,9 +30,9 @@ public class Player extends User {
     
  // Method to place a bet
     public void placeBet(double amount) {
-        if (amount > 0 && amount <= balance) {
+        if (amount > 0 && amount <= accBalance) {
             currentBet = amount;
-            balance -= amount;  // Deduct the bet from the balance
+            accBalance -= amount;  // Deduct the bet from the balance
             System.out.println("Bet placed: $" + amount);
         } else {
             System.out.println("Invalid bet amount or insufficient balance.");
@@ -57,8 +59,8 @@ public class Player extends User {
     }
 
     public void doubleDown(Card card) {
-        if (currentBet <= balance) {
-            balance -= currentBet;
+        if (currentBet <= accBalance) {
+            accBalance -= currentBet;
             currentBet *= 2;
             hit(card);
             stand();  // Must stand after doubling down

@@ -10,7 +10,7 @@ public class User {
     // Fields
     private String username;
     private String password;
-    protected double balance;  // Standardized from accBalance
+    protected int accBalance; 
     private AccountType accountType;
     private Status status;
     protected ArrayList<Card> hand;  // Added hand to manage shared functionality
@@ -27,10 +27,10 @@ public class User {
 
     
     // Constructor
-    public User(String username, String password, double balance, AccountType accountType) {
+    public User(String username, String password, int accBalance, AccountType accountType) {
         this.username = username;
         this.password = password;
-        this.balance = balance;
+        this.accBalance = accBalance;
         this.accountType = accountType;
         this.hand = new ArrayList<>();  // Initialize the hand here
     }
@@ -53,11 +53,11 @@ public class User {
     }
 
     public double getBalance() {
-        return balance;
+        return accBalance;
     }
 
     public void setBalance(double balance) {
-        this.balance = balance;
+        this.accBalance = accBalance;
     }
 
     public AccountType getAccountType() {
