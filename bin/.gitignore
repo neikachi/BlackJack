@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /user/
 /deckManagement/
 /network/
@@ -10,6 +11,9 @@
 =======
 /deckManagement/
 >>>>>>> 6330e5c36899a97e5ea94a58688aa7c9544a51eb
+=======
+>>>>>>> carlos
 /GameManager/
+/network/
 /gui/
 >>>>>>> 2d7fe23513c48610bd650e0e077a328e507f7b26
