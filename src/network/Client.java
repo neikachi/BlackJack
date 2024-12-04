@@ -1,6 +1,3 @@
-
-
-
 package network;
 
 
@@ -62,7 +59,7 @@ public class Client {
                     if (serverMessage.getRole().equals("player") && serverMessage.getContent().equals("login successful")) {
                     	// show the player gui
                     	new PlayerDealerGUI(new Client(), false);
-                    } else if (serverMessage.getRole().equals("dealer") && serverMessage.getContent().equals("login successful") {
+                    } else if (serverMessage.getRole().equals("dealer") && serverMessage.getContent().equals("login successful")) {
                     	// 
              
                     }
