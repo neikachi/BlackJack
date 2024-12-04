@@ -28,6 +28,7 @@ public class IPAddressGUI {
 			final String[] res = {null};
 		    
 		    frame = new JFrame("Connect to Server");
+		    frame.setLocationRelativeTo(null); // Center the frame
 		    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		    frame.setSize(400, 200);
 		    
