@@ -35,7 +35,7 @@ public class MainServer {
 	
 	public void start() throws IOException{
 		ServerSocket server = new ServerSocket(PORT);
-		String hostAddress = "134.154.32.163";
+		String hostAddress = "134.154.62.21";
 		System.out.println("server started on ip: " + hostAddress);
 		
 		try {
